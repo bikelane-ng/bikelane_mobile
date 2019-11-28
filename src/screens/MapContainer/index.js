@@ -22,16 +22,18 @@ const LONGITUDE_DELTA = 0.009;
 const LATITUDE = 37.78825;
 const LONGITUDE = -122.4324;
 const API_KEY = "AIzaSyA-HjztLKyWGOUaIG9Bx_n6Ie_A5p1qMkQ";
-const MapContainer = ({ region, coordinate, inputData, toggleDrawer, zoomIn, zoomOut, mapRef, nearbyDrivers, nearestDriver, onRegionChange }) => {
-    const { pickUp, dropOff } = inputData;
+const MapContainer = ({ region, coordinate, selectedAddress, mapRef, nearbyDrivers, nearestDriver, onRegionChange, overlay }) => {
+    const { pickUp, dropOff } = selectedAddress;
     function changeRegion(region) {
         onRegionChange(region)
     }
     return (
         <View style={styles.mapContainer}>
-            <View style={{ position: 'absolute', top: 80, left: 25, zIndex: 1000 }}>
+            <View style={{ position: 'absolute', top: 80, left: 25, zIndex: 1000, }}>
                 <Text style={{ fontFamily: fonts.bold, fontSize: 20, }}>Select your Drive</Text>
             </View>
+            {overlay && <View style={{ backgroundColor: '#000000', opacity: 0.7, width: '100%', height: '100%', zIndex: 1000, position: 'absolute', top: 0 }}>
+            </View>}
 
             <MapView
                 ref={mapRef}
@@ -39,7 +41,7 @@ const MapContainer = ({ region, coordinate, inputData, toggleDrawer, zoomIn, zoo
                 provider={PROVIDER_GOOGLE}
                 // showUserLocation
                 followUserLocation={true}
-                // zoomEnabled={true}
+                zoomEnabled={true}
                 // onRegionChangeComplete={onRegionChange}
                 // loadingEnabled
                 // onLayout={() => mapRef && mapRef.fitToCoordinates(coordinate, { edgePadding: { top: 10, right: 10, bottom: 10, left: 10 }, animated: true })}
@@ -57,26 +59,21 @@ const MapContainer = ({ region, coordinate, inputData, toggleDrawer, zoomIn, zoo
                             strokeWidth={3}
                         /> : null
                 }
-                {/* <Marker.Animated
-                    ref={marker => {
-                        this.marker = marker;
-                    }}
-                    coordinate={coordinate}
-                /> */}
 
                 {pickUp &&
                     <MapView.Marker
                         coordinate={pickUp.location}
                         image={pickUpMarker}
                         // pinColor="green"
-                        title={pickUp.location}
+                        title={pickUp.name}
                     />
                 }
+
                 {dropOff &&
                     <MapView.Marker
                         coordinate={dropOff.location}
                         pinColor="blue"
-                        title={dropOff.location}
+                        title={dropOff.name}
                     />
                 }
 
@@ -119,23 +116,6 @@ const MapContainer = ({ region, coordinate, inputData, toggleDrawer, zoomIn, zoo
             <View pointerEvents="none" style={styles.markerFixed}>
                 <Image style={{ width: 40, height: 40 }} pointerEvents="none" source={marker} />
             </View>
-
-            {/* <View style={styles.searchBox}>
-                <Icon
-                    onPress={() => toggleDrawer()}
-                    style={{ marginTop: 50, padding: 20, fontSize: 40 }}
-                    type="Ionicons"
-                    name="ios-menu"
-                />
-            </View> */}
-            {/* 
-            <View style={styles.buttonContainer}>
-                <TouchableOpacity style={[styles.bubble, styles.button]}>
-                    <Text style={styles.bottomBarContent}>
-                        {parseFloat(this.state.distanceTravelled).toFixed(2)} km
-            </Text>
-                </TouchableOpacity>
-            </View> */}
         </View>
     );
 }

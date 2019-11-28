@@ -19,6 +19,10 @@ function navigate(routeName, params) {
     );
 }
 
+function goBack() {
+    NavigationActions.back();
+}
+
 function toggleDrawer(routeName, params) {
     _navigator.dispatch(
         DrawerActions.toggleDrawer()
@@ -41,4 +45,5 @@ export default {
     setTopLevelNavigator,
     resetAction,
     toggleDrawer,
+    goBack,
 };

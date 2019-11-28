@@ -5,6 +5,7 @@ const styles = {
         // top: 160,
         // position: "absolute",
         marginTop: 10,
+        // height: '42%',
         // width: width,
         // height: 1000,
         // backgroundColor: "#fff",

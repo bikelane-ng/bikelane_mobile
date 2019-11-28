@@ -25,6 +25,7 @@ import SearchResult from "../SearchResults";
 import BookingDetails from '../BookingDetails';
 import DriverDetails from "../DriverDetails";
 import { Menu } from "../assets/Components";
+import RequestRide from "../RequestRide";
 // import io from 'socket.io-client';
 // const socket = io('http://localhost:8085', {
 //     transports: ['websocket']
@@ -39,7 +40,8 @@ const LATITUDE_DELTA = 0.009;
 const LONGITUDE_DELTA = 0.009;
 const LATITUDE = 37.78825;
 const LONGITUDE = -122.4324;
-const DEFAULT_PADDING = { top: 40, right: 40, bottom: 40, left: 40 };
+const DEFAULT_PADDING = { top: 80, right: 80, bottom: 80, left: 80 };
+const SPACE = 0.01;
 
 class RiderMap extends React.Component {
     constructor(props) {
@@ -47,8 +49,10 @@ class RiderMap extends React.Component {
 
         this.state = {
             inputTxt: false,
+            requestLoader: false,
             mapRef: {},
             selected: false,
+            hasAddress: false,
             region: {
                 latitude: 0,
                 longitude: 0,
@@ -74,11 +78,11 @@ class RiderMap extends React.Component {
         this.onRegionChange = this.onRegionChange.bind(this);
     }
 
-    static navigationOptions = {
-        drawerIcon: ({ tintColor }) => (
-            <Icon type="Ionicons" style={{ color: tintColor }} name="ios-home" />
-        )
-    }
+    // static navigationOptions = {
+    //     drawerIcon: ({ tintColor }) => (
+    //         <Icon type="Ionicons" style={{ color: tintColor }} name="ios-home" />
+    //     )
+    // }
 
     componentDidMount() {
         const { navigation } = this.props;
@@ -150,18 +154,6 @@ class RiderMap extends React.Component {
                         longitudeDelta: LONGITUDE_DELTA
                     }
                 })
-            }
-
-            if (prevProps.home.selectedAddress.pickUp && prevProps.home.selectedAddress.dropOff) {
-                const region = {
-                    latitude: prevProps.home.selectedAddress.pickUp.location.latitude,
-                    longitude: prevProps.home.selectedAddress.pickUp.location.longitude,
-                    latitudeDelta: LATITUDE_DELTA,
-                    longitudeDelta: LONGITUDE_DELTA
-                }
-                // this.fitMarkers(prevProps.home.inputData.pickUp.location, prevProps.home.inputData.dropOff.location);
-                this.onPressZoomOut(region);
-                this.props.getNearbyDrivers();
             }
         }
         if (prevProps.home.nearbyDrivers && prevProps.home.nearbyDrivers != this.props.home.nearbyDrivers) {
@@ -273,8 +265,12 @@ class RiderMap extends React.Component {
 
     }
 
-    mapRef(ref) {
-        this.map = ref;
+    mapRef = (ref) => {
+        if (ref) {
+            // this.props.mapRef(ref);
+            this.map = ref;
+            console.log(this.map)
+        }
     }
 
     onSelect = driver => {
@@ -284,10 +280,27 @@ class RiderMap extends React.Component {
 
     requestRide = () => {
         const { navigation } = this.props;
-        navigation.navigate('LocateDriver', {
-            returnToRoute: navigation.state,
-            onSelect: this.onSelect
-        });
+        this.setState({ requestLoader: true })
+        this.props.requestRide();
+        // navigation.navigate('LocateDriver', {
+        //     returnToRoute: navigation.state,
+        //     onSelect: this.onSelect
+        // });
+    }
+
+    createMarker = (modifier = 1, latitude, longitude) => {
+        return {
+            latitude: latitude - SPACE * modifier,
+            longitude: longitude - SPACE * modifier,
+        };
+    }
+
+    getMarkers = () => {
+        const { pickUp, dropOff } = this.props.home.selectedAddress;
+        return MARKERS = [
+            this.createMarker(1, pickUp.location.latitude, pickUp.location.longitude),
+            this.createMarker(2, dropOff.location.latitude, dropOff.location.longitude),
+        ];
     }
 
     fitMarkers(pickUp, dropOff) {
@@ -296,11 +309,16 @@ class RiderMap extends React.Component {
                 pickUp,
                 dropOff
             ]
-            console.log(query)
-            this.map.fitToCoordinates(query, {
+            console.log(this.map)
+            console.log(this.getMarkers())
+            // this.map.fitToCoordinates(query, {
+            //     edgePadding: DEFAULT_PADDING,
+            //     animated: true,
+            // });
+            this.map.fitToCoordinates(this.getMarkers(), {
                 edgePadding: DEFAULT_PADDING,
                 animated: true,
-            });
+              });
         }, 0);
     }
 
@@ -310,55 +328,59 @@ class RiderMap extends React.Component {
         })
     }
 
+    confirmSelection = () => {
+        const { pickUp, dropOff } = this.props.home.selectedAddress;
+        this.props.closeToggleModal();
+        setTimeout(() => {
+            this.fitMarkers(pickUp.location, dropOff.location);
+        }, 0);
+    };
+
     toggleDrawer = () => this.props.navigation.toggleDrawer();
 
     render() {
         const width = Dimensions.get('screen').width;
         return (
-            <View style={{ flex: 1 }}>
-                {!this.props.home.toggle ? <View style={{ flex: 1 }}>
-                    
+            <View style={{ flex: 1, }}>
+                {!this.props.home.toggle ? <View style={{ flex: 1, }}>
                     <MapContainer
-                        // ref={this.map}
                         region={this.state.region}
-                        // routeCoordinates={this.state.routeCoordinates}
                         coordinate={this.state.coordinate}
-                        inputData={this.props.home.inputData}
-                        toggleDrawer={this.toggleDrawer}
-                        zoomIn={this.onPressZoomOut}
-                        zoomOut={this.onPressZoomOut}
+                        selectedAddress={this.props.home.selectedAddress}
                         mapRef={this.mapRef}
                         nearbyDrivers={this.state.nearbyDrivers}
                         nearestDriver={this.state.nearestDriver}
                         onRegionChange={this.onRegionChange}
+                        overlay={this.props.home.overlay}
                     />
-                    {/* <View style={{ position: 'absolute', top: 30, zIndex: 1000, elevation: 5, padding: 20, right: 0, }}>
+                    <View style={{ position: 'absolute', top: 30, zIndex: 1000, elevation: 5, padding: 20, right: 0, }}>
                         <TouchableOpacity
                             onPress={this.toggleDrawer}
                             activeOpacity={0.7}>
                             <Menu />
                         </TouchableOpacity>
-                    </View> */}
-                    <MapSearch
-                        toggleSearchModal={this.props.toggleSearchModal}
-                        getAddressPredictions={this.props.getAddressPredictions}
-                        getInputData={this.props.getInputData}
-                        inputData={this.props.home.inputData}
-                    />
-                    {
-                        this.props.home.inputData.pickUp && this.props.home.inputData.dropOff && Object.keys(this.state.nearestDriver).length === 0 ?
-                            <BookingDetails
-                                distanceMatrix={this.props.home.distanceMatrix}
-                                fare={this.props.home.fare}
-                                requestRide={this.requestRide}
-                            /> : null
-                    }
-                    {
-                        Object.keys(this.state.nearestDriver).length > 0 ?
-                            <DriverDetails
-                                driverDetails={this.state.nearestDriver}
-                            /> : null
-                    }
+                    </View>
+                    {!this.props.home.inputData.pickUp &&
+                        !this.props.home.inputData.dropOff && <MapSearch
+                            toggleSearchModal={this.props.toggleSearchModal}
+                            getAddressPredictions={this.props.getAddressPredictions}
+                            getInputData={this.props.getInputData}
+                            inputData={this.props.home.inputData}
+                        />}
+                    {this.props.home.requestRide && !this.props.home.nearestDriver && <RequestRide
+                        cancelRide={this.props.cancelRide}
+                    />}
+                    {this.props.home.inputData.pickUp &&
+                        this.props.home.inputData.dropOff &&
+                        !this.props.home.requestRide && <BookingDetails
+                            distanceMatrix={this.props.home.distanceMatrix}
+                            fare={this.props.home.fare}
+                            requestRide={this.props.requestRide}
+                        />}
+                    {this.props.home.nearestDriver && <DriverDetails
+                        driverDetails={this.props.home.nearestDriver}
+                        cancelRide={this.props.cancelRide}
+                    />}
                 </View> : <SearchResult
                         inputData={this.props.home.inputData}
                         resultTypes={this.props.home.resultTypes}
@@ -367,6 +389,7 @@ class RiderMap extends React.Component {
                         getAddressPredictions={this.props.getAddressPredictions}
                         getSelectedAddress={this.props.getSelectedAddress}
                         closeToggleModal={this.props.closeToggleModal}
+                        confirmSelection={this.confirmSelection}
                         searching={this.props.home.searching}
                         error={this.props.home.error}
                     />}

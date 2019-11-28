@@ -1,6 +1,7 @@
 export default {
     // home: {
-    //     inputData: undefined,
+    //     inputData: {},
+    //     selectedAddress: {},
     // },
     user: {
 

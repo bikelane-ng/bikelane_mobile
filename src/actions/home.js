@@ -29,7 +29,10 @@ const {
     GET_ROUTE_DIRECTIONS_ERROR,
     NEAREST_DRIVER,
     BOOK_CAR,
-    GET_NEARBY_DRIVERS
+    GET_NEARBY_DRIVERS,
+    REQUEST_RIDE,
+    CANCEL_RIDE,
+    MAP_REF,
 } = constants;
 
 const { width, height } = Dimensions.get("window");
@@ -101,7 +104,6 @@ export function unToggleSearchResultModal() {
     }
 }
 
-
 //GET ADRESSES FROM GOOGLE PLACE
 
 export function getAddressPredictions() {
@@ -151,10 +153,10 @@ export function getSelectedAddress(payload) {
             })
             .then(() => {
                 //Get the distance and time
-                if (store().home.inputData.pickUp && store().home.inputData.dropOff) {
+                if (store().home.selectedAddress.pickUp && store().home.selectedAddress.dropOff) {
                     let query = {
-                        origins: store().home.inputData.pickUp.location.latitude + "," + store().home.inputData.pickUp.location.longitude,
-                        destinations: store().home.inputData.dropOff.location.latitude + "," + store().home.inputData.dropOff.location.longitude,
+                        origins: store().home.selectedAddress.pickUp.location.latitude + "," + store().home.selectedAddress.pickUp.location.longitude,
+                        destinations: store().home.selectedAddress.dropOff.location.latitude + "," + store().home.selectedAddress.dropOff.location.longitude,
                         mode: "driving",
                         key: "AIzaSyA-HjztLKyWGOUaIG9Bx_n6Ie_A5p1qMkQ"
                     }
@@ -173,7 +175,7 @@ export function getSelectedAddress(payload) {
                         })
                 }
                 setTimeout(function () {
-                    if (store().home.inputData.pickUp && store().home.inputData.dropOff) {
+                    if (store().home.selectedAddress.pickUp && store().home.selectedAddress.dropOff) {
                         const fare = calculateFare(
                             dummyNumbers.baseFare,
                             dummyNumbers.timeRate,
@@ -233,8 +235,8 @@ export function getNearbyDrivers() {
         var minDistance = 0;
         var nearbyDrivers = [];
         var userLocation = {
-            latitude: store().home.location.coords.latitude,
-            longitude: store().home.location.coords.longitude
+            latitude: store().home.selectedAddress.pickUp.location.latitude,
+            longitude: store().home.selectedAddress.dropOff.location.longitude
         }
         FakeDrivers(userLocation.latitude, userLocation.longitude).forEach(drivers => {
             let distance = haversine(userLocation, drivers.position);
@@ -242,11 +244,8 @@ export function getNearbyDrivers() {
             if (distance <= 50) {
                 nearbyDrivers.push(drivers);
             }
-            // if (minDistance === 0 || minDistance > distance) {
-            //     minDistance = distance;
-            //     nearbyDrivers = Object.assign({}, drivers);
-            // }
         })
+        var nearestDriver = nearbyDrivers.reduce((prev, curr) => curr.distance < prev.distance ? curr : prev);
         return dispatch({
             type: GET_NEARBY_DRIVERS,
             payload: nearbyDrivers
@@ -259,6 +258,59 @@ export function nearestDriver(driver) {
         dispatch({
             type: NEAREST_DRIVER,
             payload: driver
+        })
+    }
+}
+
+export function requestRide() {
+    return (dispatch, store) => {
+        dispatch({
+            type: REQUEST_RIDE,
+        })
+        setTimeout(() => {
+            var minDistance = 0;
+            var nearbyDrivers = [];
+            var userLocation = {
+                latitude: store().home.selectedAddress.pickUp.location.latitude,
+                longitude: store().home.selectedAddress.dropOff.location.longitude
+            }
+            FakeDrivers(userLocation.latitude, userLocation.longitude).forEach(drivers => {
+                let distance = haversine(userLocation, drivers.position);
+                drivers = Object.assign(drivers, { distance: distance });
+                if (distance <= 50) {
+                    nearbyDrivers.push(drivers);
+                }
+            })
+            var nearestDriver = nearbyDrivers.reduce((prev, curr) => curr.distance < prev.distance ? curr : prev);
+            return dispatch({
+                type: NEAREST_DRIVER,
+                payload: nearestDriver
+            })
+        }, 2000);
+    }
+}
+
+export function cancelRide() {
+    return (dispatch) => {
+        dispatch({
+            type: CANCEL_RIDE,
+        })
+    }
+}
+
+export function mapRef(ref) {
+    return (dispatch) => {
+        dispatch({
+            type: MAP_REF,
+            payload: ref,
+        })
+    }
+}
+
+export function confirmSelection() {
+    return (dispatch) => {
+        dispatch({
+            type: CONFIRM_SELECTION,
         })
     }
 }

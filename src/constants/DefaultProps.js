@@ -11,12 +11,15 @@ export const colors = {
     info: "#4BB0C0",
     warning: "#FF9601",
     pink: "#DE408B",
+    bg: '#FAFAFA',
+    gray: '#707070',
 }
+//bg-F5FCFF
 
 export const fonts = {
-    default: 'Lato-Regular',
-    medium: 'Lato-Medium',
-    bold: 'Lato-Black',
+    default: 'NoirPro-Regular',
+    medium: 'NoirPro-Medium',
+    bold: 'NoirPro-Bold',
 }
 
 export const toastType = {

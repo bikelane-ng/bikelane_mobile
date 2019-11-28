@@ -7,6 +7,10 @@ import * as homeActions from './home';
 
 export const doLogin = loginActions.doLogin,
     doRegister = registerActions.doRegister,
+    inputNumber = appActions.inputNumber,
+    validateMobile = appActions.validateMobile, 
+    generateOTP = appActions.generateOTP,
+    verifyOTP = appActions.verifyOTP,
     // fetchUsers = userActions.fetchUsers,
     logout = userActions.logout,
     initializeApp = appActions.initializeApp,
@@ -27,4 +31,8 @@ export const doLogin = loginActions.doLogin,
     updateInputAddress = homeActions.updateInputAddress,
     getRouteDirections = homeActions.getRouteDirections,
     getNearbyDrivers = homeActions.getNearbyDrivers,
-    nearestDriver = homeActions.nearestDriver
+    nearestDriver = homeActions.nearestDriver,
+    requestRide = homeActions.requestRide,
+    cancelRide = homeActions.cancelRide,
+    mapRef = homeActions.mapRef,
+    confirmSelection = homeActions.confirmSelection

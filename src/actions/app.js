@@ -20,42 +20,84 @@ export const initializeApp = () => {
     }
 }
 
-// export const authorizeUser = (data = {}) => ({
-//     [RSAA]: {
-//         endpoint: `${BASE_URL}/verify`,
-//         method: 'POST',
-//         types: [
-//             constants.REQUEST(constants.AUTH_USER),
-//             {
-//                 type: constants.REQUEST_SUCCESS(constants.AUTH_USER),
-//                 payload: (action, state, response) => response.json().then(response => {
-//                     return {
-//                         token: data.token,
-//                         user: response
-//                     }
-//                 })
-//             },
-//             {
-//                 type: constants.REQUEST_FAILURE(constants.AUTH_USER),
-//                 meta: (action, state, res) => {
-//                     if (res) {
-//                         return {
-//                             status: res.status,
-//                             statusText: JSON.parse(res._bodyInit).message
-//                         };
-//                     } else {
-//                         return {
-//                             status: 'Network request failed'
-//                         }
-//                     }
-//                 }
-//             }
-//         ],
-//         body: JSON.stringify(data),
-//         headers: {
-//             Accept: "application/json",
-//             "Content-Type": "application/json"
-//         },
-//         credentials: "same-origin"
-//     }
-// });
+export function inputNumber(number) {
+    return (dispatch) => {
+        dispatch({
+            type: constants.INPUT_NUMBER,
+            payload: number
+        })
+    }
+}
+
+export function validateMobile() {
+    return (dispatch, store) => {
+        let number = store().app.mobile;
+        if (!number.startsWith(234) && !number.startsWith('+234')) {
+            number = '234' + number;
+        }
+        dispatch({
+            type: constants.VALIDATE_NUMBER,
+            payload: number
+        })
+    }
+}
+
+export const generateOTP = number => ({
+    [RSAA]: {
+        endpoint: `${config.api.host}/phone/sendOtp`,
+        method: 'POST',
+        types: [
+            constants.GENERATE_OTP,
+            {
+                type: constants.GENERATE_OTP_SUCCESS,
+                payload: (action, state, response) => response.json().then(response => ({
+                    response
+                }))
+            },
+            {
+                type: constants.GENERATE_OTP_FAILURE,
+                meta: (action, state, res) => {
+                    return {
+                        error: res
+                    }
+                }
+            }
+        ],
+        body: JSON.stringify(number),
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+        },
+        credentials: "same-origin"
+    }
+});
+
+export const verifyOTP = data => ({
+    [RSAA]: {
+        endpoint: `${config.api.host}/phone/verifyOtp`,
+        method: 'POST',
+        types: [
+            constants.VERIFY_OTP,
+            {
+                type: constants.VERIFY_OTP_SUCCESS,
+                payload: (action, state, response) => response.json().then(response => ({
+                    response
+                }))
+            },
+            {
+                type: constants.VERIFY_OTP_FAILURE,
+                meta: (action, state, res) => {
+                    return {
+                        error: res
+                    }
+                }
+            }
+        ],
+        body: JSON.stringify(data),
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+        },
+        credentials: "same-origin"
+    }
+})

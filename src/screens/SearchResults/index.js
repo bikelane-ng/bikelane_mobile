@@ -7,10 +7,11 @@ import {
 import { Input, Item, List, Icon, Left, Body, ListItem, Spinner, CardItem, Card } from 'native-base';
 import styles from './SearchResultStyles';
 import Text from '../../config/AppText';
-import { colors } from '../../constants/DefaultProps';
+import { colors, fonts } from '../../constants/DefaultProps';
+import Button from '../../components/Button';
 
 const truncateLength = 28;
-const SearchResult = ({ inputData, resultTypes, predictions, getInputData, getAddressPredictions, getSelectedAddress, selectedAddress, closeToggleModal, searching, error }) => {
+const SearchResult = ({ inputData, resultTypes, predictions, getInputData, getAddressPredictions, getSelectedAddress, closeToggleModal, confirmSelection, searching, error }) => {
     function handleSelectedAddress(placeID) {
         getSelectedAddress(placeID)
     }
@@ -63,7 +64,7 @@ const SearchResult = ({ inputData, resultTypes, predictions, getInputData, getAd
                                             autoFocus={false}
                                             value={inputData && inputData["pickUp"] && inputData.pickUp}
 
-                                            // value={selectedAddress && selectedAddress["pickUp"] && selectedAddress.pickUp.name.length > truncateLength ? `${selectedAddress.pickUp.name.substring(0, truncateLength)}...` : selectedAddress.pickUp && selectedAddress.pickUp.name.length < truncateLength ? selectedAddress.pickUp.name : ""}
+                                        // value={selectedAddress && selectedAddress["pickUp"] && selectedAddress.pickUp.name.length > truncateLength ? `${selectedAddress.pickUp.name.substring(0, truncateLength)}...` : selectedAddress.pickUp && selectedAddress.pickUp.name.length < truncateLength ? selectedAddress.pickUp.name : ""}
                                         />
                                         {inputData && inputData.length > 0 && <TouchableOpacity>
                                             <Icon style={{ color: "red", fontSize: 40 }} type='Ionicons' name='ios-close' />
@@ -134,7 +135,7 @@ const SearchResult = ({ inputData, resultTypes, predictions, getInputData, getAd
                             style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#ffffff', marginTop: 2, padding: 20, }}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <Icon style={{ fontSize: 20, color: colors.yellow }} name='ios-pin' />
-                                <View style={{ paddingLeft: 30 }}>
+                                <View style={{ paddingLeft: 30, paddingRight: 10 }}>
                                     <Text style={styles.primaryText}>{item.primaryText}</Text>
                                     <Text style={styles.secondaryText}>{item.secondaryText}</Text>
                                 </View>
@@ -153,6 +154,16 @@ const SearchResult = ({ inputData, resultTypes, predictions, getInputData, getAd
                             </ListItem> */}
                         </TouchableOpacity>
                     }
+                />
+            </View>
+
+            <View style={{ padding: 30, flex: 1, justifyContent: 'flex-end' }}>
+                <Button
+                    onPress={() => confirmSelection()}
+                    BtnText={"Done"}
+                    // loading={this.state.isProcessing ? true : false}
+                    style={{ backgroundColor: colors.black, }}
+                    BtnTextStyles={{ color: '#ffffff' }}
                 />
             </View>
         </View>

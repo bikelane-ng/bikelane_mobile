@@ -11,7 +11,7 @@ class Splash extends Component {
     componentDidMount() {
         const resetAction = StackActions.reset({
             index: 0,
-            actions: [NavigationActions.navigate({ routeName: 'RiderMap' })],
+            actions: [NavigationActions.navigate({ routeName: 'OTP' })],
         });
 
         setTimeout(() => this.props.navigation.dispatch(resetAction), 4000)

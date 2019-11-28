@@ -16,10 +16,10 @@ const styles = StyleSheet.create({
         // ...StyleSheet.absoluteFillObject,
         flex: 1,
         justifyContent: "flex-end",
-        alignItems: "center"
+        alignItems: "center",
     },
     map: {
-        ...StyleSheet.absoluteFillObject
+        ...StyleSheet.absoluteFillObject,
         // flex: 1
     },
     markerFixed: {

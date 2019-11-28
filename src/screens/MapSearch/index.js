@@ -18,7 +18,7 @@ import {
 import styles from "./MapSearchStyles";
 import Text from '../../config/AppText';
 import PropTypes from 'prop-types';
-import { fonts } from "../../helpers/utils";
+import { fonts } from "../../constants/DefaultProps";
 import { colors } from "../../constants/DefaultProps";
 
 const propTypes = {

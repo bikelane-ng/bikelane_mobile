@@ -6,7 +6,8 @@ const initialState = {
         coords: {}
     },
     inputData: {},
-    selectedAddress: {}
+    selectedAddress: {},
+    mapRef: undefined,
 }
 export default function homeReducer(state = initialState, action) {
     switch (action.type) {
@@ -103,12 +104,32 @@ export default function homeReducer(state = initialState, action) {
             })
         case constants.NEAREST_DRIVER:
             return Object.assign({}, state, {
-                nearestDriver: action.payload
+                nearestDriver: action.payload,
+                overlay: false,
             })
         case constants.GET_FARE:
             return Object.assign({}, state, {
                 fare: action.payload
             })
+        case constants.REQUEST_RIDE:
+            return Object.assign({}, state, {
+                requestRide: true,
+                overlay: true,
+            })
+        case constants.CANCEL_RIDE:
+            return Object.assign({}, state, {
+                requestRide: false,
+                overlay: false,
+                toggle: true,
+                nearestDriver: undefined,
+            })
+        case constants.MAP_REF:
+            if (!state.mapRef) {
+                return {
+                    ...state,
+                    mapRef: action.payload,
+                }
+            }
         default:
             return state;
     }
