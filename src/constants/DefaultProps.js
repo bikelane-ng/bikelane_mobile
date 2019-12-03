@@ -29,4 +29,6 @@ export const toastType = {
     warning,
 }
 
+export const API_KEY = "AIzaSyBHdDa33QVmJlDXAV4CC9MBts4f-W3T-EQ";
+
 export const roles = { user: 'user', styler: 'styler', }

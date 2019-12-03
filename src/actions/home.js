@@ -5,11 +5,12 @@ import Geolocation from '@react-native-community/geolocation';
 import RNGooglePlaces from "react-native-google-places";
 import Axios from "axios";
 import Geocoder from 'react-native-geocoding';
-Geocoder.init('AIzaSyA-HjztLKyWGOUaIG9Bx_n6Ie_A5p1qMkQ'); // use a valid API key
 import calculateFare from '../helpers/FareCalculator';
 import { FakeDrivers } from "../fakers/fake_drivers";
 var polyline = require('@mapbox/polyline');
 import haversine from "haversine";
+import { API_KEY } from "../constants/DefaultProps";
+Geocoder.init(API_KEY); // use a valid API key
 
 const {
     GET_CURRENT_LOCATION,
@@ -170,7 +171,7 @@ export function getSelectedAddress(payload) {
                         origins: store().home.selectedAddress.pickUp.location.latitude + "," + store().home.selectedAddress.pickUp.location.longitude,
                         destinations: store().home.selectedAddress.dropOff.location.latitude + "," + store().home.selectedAddress.dropOff.location.longitude,
                         mode: "driving",
-                        key: "AIzaSyA-HjztLKyWGOUaIG9Bx_n6Ie_A5p1qMkQ"
+                        key: API_KEY
                     }
                     Axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${query.origins}&destinations=${query.destinations}&mode=${query.mode}&key=${query.key}`)
                         .then(response => {
