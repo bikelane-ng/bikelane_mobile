@@ -1,6 +1,6 @@
 import React from 'react';
 import Svg, {
-    Path, Circle, Defs, ClipPath, Rect, G, Line,
+    Path, Circle, Defs, ClipPath, Rect, G, Line, Text,
 } from "react-native-svg";
 
 export const HamburgerIcon = () => {
@@ -51,3 +51,8 @@ export const SettingsIcon = ({ tintColor }) => {
     </Svg>
 }
 
+// export const Logo = ({ tintColor }) => {
+//     return <Svg xmlns="http://www.w3.org/2000/svg" width="78" height="27" viewBox="0 0 78 27">
+//         <Text id="Bikelane" transform="translate(0 22)" fontSize="21" fontFamily="FuturaBT-Medium, Futura" fontWeight="500" letterSpacing="-0.02em"><tspan x="0" y="0">Bikelane</tspan></Text>
+//     </Svg>
+// }

@@ -58,7 +58,11 @@ const styles = StyleSheet.create({
     },
     date_txt: {
         fontSize: 12,
-    }
+    },
+    input:{
+        fontFamily: fonts.default,
+        marginLeft: 20,
+    },
 })
 
 export default Promotion;

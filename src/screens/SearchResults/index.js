@@ -9,9 +9,24 @@ import styles from './SearchResultStyles';
 import Text from '../../config/AppText';
 import { colors, fonts } from '../../constants/DefaultProps';
 import Button from '../../components/Button';
+import PlacesComponent from './PlacesComponents';
+import Header from '../../components/Header';
 
 const truncateLength = 28;
-const SearchResult = ({ inputData, resultTypes, predictions, getInputData, getAddressPredictions, getSelectedAddress, closeToggleModal, confirmSelection, searching, error }) => {
+const SearchResult = ({
+    inputData,
+    resultTypes,
+    predictions,
+    getInputData,
+    clearInputData,
+    getAddressPredictions,
+    selectedAddress,
+    getSelectedAddress,
+    closeToggleModal,
+    confirmSelection,
+    searching,
+    error
+}) => {
     function handleSelectedAddress(placeID) {
         getSelectedAddress(placeID)
     }
@@ -25,14 +40,18 @@ const SearchResult = ({ inputData, resultTypes, predictions, getInputData, getAd
     _keyExtractor = (item, index) => item.name;
     return (
         <View style={{ flex: 1, backgroundColor: '#FAFAFA', }}>
-            <TouchableOpacity
+            {/* <TouchableOpacity
                 onPress={() => closeToggleModal()}
                 style={{ padding: 10 }}>
                 <Icon style={{ color: "#00A87E", fontSize: 30 }} type='Ionicons' name='arrow-round-back' />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+            <Header
+                hamburger={false}
+                backAction={() => closeToggleModal()}
+            />
 
-            <View style={{ padding: 0, backgroundColor: '#ffffff' }}>
-                <View style={{ marginTop: 20, padding: 15 }}>
+            <View style={{ backgroundColor: '#ffffff' }}>
+                <View style={{ padding: 15 }}>
                     <View >
                         <View style={{ flexDirection: "row" }}>
                             <View style={{ marginTop: 15, padding: 10 }}>
@@ -66,8 +85,8 @@ const SearchResult = ({ inputData, resultTypes, predictions, getInputData, getAd
 
                                         // value={selectedAddress && selectedAddress["pickUp"] && selectedAddress.pickUp.name.length > truncateLength ? `${selectedAddress.pickUp.name.substring(0, truncateLength)}...` : selectedAddress.pickUp && selectedAddress.pickUp.name.length < truncateLength ? selectedAddress.pickUp.name : ""}
                                         />
-                                        {inputData && inputData.length > 0 && <TouchableOpacity>
-                                            <Icon style={{ color: "red", fontSize: 40 }} type='Ionicons' name='ios-close' />
+                                        {inputData && inputData['pickUp'] && inputData['pickUp'].length > 0 && <TouchableOpacity onPress={() => clearInputData('pickUp')}>
+                                            <Icon style={{ color: colors.gray, fontSize: 30, marginRight: 5, }} type='Ionicons' name='ios-close' />
                                         </TouchableOpacity>}
                                     </Item>
                                 </View>
@@ -82,8 +101,8 @@ const SearchResult = ({ inputData, resultTypes, predictions, getInputData, getAd
                                             autoFocus={false}
                                             value={inputData && inputData["dropOff"] && inputData.dropOff}
                                         />
-                                        {inputData && inputData.length > 0 && <TouchableOpacity>
-                                            <Icon style={{ color: "red", fontSize: 40 }} type='Ionicons' name='ios-close' />
+                                        {inputData && inputData['dropOff'] && inputData['dropOff'].length > 0 && <TouchableOpacity onPress={() => clearInputData('dropOff')}>
+                                            <Icon style={{ color: colors.gray, fontSize: 30, marginRight: 5, }} type='Ionicons' name='ios-close' />
                                         </TouchableOpacity>}
                                     </Item>
                                 </View>
@@ -93,78 +112,52 @@ const SearchResult = ({ inputData, resultTypes, predictions, getInputData, getAd
                 </View>
             </View>
 
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#ffffff', marginTop: 5, padding: 20, }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Icon style={{ fontSize: 20, color: colors.yellow }} name='ios-star' />
-                    <Text style={{ paddingLeft: 15, fontSize: 16, position: 'relative', bottom: 2, }}>Saved Places</Text>
-                </View>
-                <View>
-                    <Icon style={{ color: '#707070' }} name='ios-arrow-forward' />
-                </View>
-            </View>
 
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#ffffff', marginTop: 5, padding: 20, }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Icon style={{ fontSize: 20, color: colors.black }} name='ios-heart' />
-                    <Text style={{ paddingLeft: 15, fontSize: 16, position: 'relative', bottom: 2, }}>Favourites</Text>
-                </View>
-                <View>
-                    <Icon style={{ color: '#707070' }} name='ios-arrow-forward' />
-                </View>
-            </View>
+            <View style={{ flex: 1 }}>
+                {searching && <View style={{ marginTop: 30, alignItems: "center" }}>
+                    <Spinner size='small' />
+                    <Text>Please wait...</Text>
+                </View>}
 
+                {error && !searching && <View style={{ width: "90%", marginTop: 30, alignItems: "center", padding: 20, flexDirection: "row" }}>
+                    <Icon type='Ionicons' name='ios-information-circle-outline' />
+                    <Text style={{ paddingLeft: 20 }}>{error}</Text>
+                </View>}
 
-            {searching && <View style={{ marginTop: 30, alignItems: "center" }}>
-                <Spinner size='small' />
-                <Text>Please wait...</Text>
-            </View>}
-
-            {error && !searching && <View style={{ width: "90%", marginTop: 30, alignItems: "center", padding: 20, flexDirection: "row" }}>
-                <Icon type='Ionicons' name='ios-information-circle-outline' />
-                <Text style={{ paddingLeft: 20 }}>{error}</Text>
-            </View>}
-
-            <View style={styles.searchResultsWrapper}>
-                <List
-                    dataArray={predictions}
-                    keyExtractor={(item, index) => index.toString()}
-                    renderRow={(item) =>
-                        <TouchableOpacity
-                            activeOpacity={0.7}
-                            onPress={() => handleSelectedAddress(item.placeID)}
-                            style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#ffffff', marginTop: 2, padding: 20, }}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Icon style={{ fontSize: 20, color: colors.yellow }} name='ios-pin' />
-                                <View style={{ paddingLeft: 30, paddingRight: 10 }}>
-                                    <Text style={styles.primaryText}>{item.primaryText}</Text>
-                                    <Text style={styles.secondaryText}>{item.secondaryText}</Text>
+                <View style={styles.searchResultsWrapper}>
+                    <List
+                        dataArray={predictions}
+                        keyExtractor={(item, index) => index.toString()}
+                        renderRow={(item) =>
+                            <TouchableOpacity
+                                activeOpacity={0.7}
+                                onPress={() => handleSelectedAddress(item.placeID)}
+                                style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#ffffff', marginTop: 2, padding: 20, }}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <Icon style={{ fontSize: 20, color: colors.yellow }} name='ios-pin' />
+                                    <View style={{ paddingLeft: 30, paddingRight: 10 }}>
+                                        <Text style={styles.primaryText}>{item.primaryText}</Text>
+                                        <Text style={styles.secondaryText}>{item.secondaryText}</Text>
+                                    </View>
                                 </View>
-                            </View>
-                            <View>
-                                <Icon style={{ color: colors.yellow, fontSize: 20, }} name='ios-heart' />
-                            </View>
-                            {/* <ListItem onPress={() => handleSelectedAddress(item.placeID)} button avatar>
-                                <Left style={styles.leftContainer}>
-                                    <Icon style={styles.leftIcon} name="pin" />
-                                </Left>
-                                <Body>
-                                    <Text style={styles.primaryText}>{item.primaryText}</Text>
-                                    <Text style={styles.secondaryText}>{item.secondaryText}</Text>
-                                </Body>
-                            </ListItem> */}
-                        </TouchableOpacity>
-                    }
-                />
-            </View>
+                                <View>
+                                    <Icon style={{ color: colors.yellow, fontSize: 20, }} name='ios-heart' />
+                                </View>
+                            </TouchableOpacity>
+                        }
+                    />
+                </View>
+                {!inputData['pickUp'] && !inputData['dropOff'] ? <PlacesComponent /> : null}
 
-            <View style={{ padding: 30, flex: 1, justifyContent: 'flex-end' }}>
-                <Button
-                    onPress={() => confirmSelection()}
-                    BtnText={"Done"}
-                    // loading={this.state.isProcessing ? true : false}
-                    style={{ backgroundColor: colors.black, }}
-                    BtnTextStyles={{ color: '#ffffff' }}
-                />
+                {selectedAddress && selectedAddress['pickUp'] && selectedAddress['dropOff'] && <View style={{ padding: 30, flex: 1, justifyContent: 'flex-end' }}>
+                    <Button
+                        onPress={() => confirmSelection()}
+                        BtnText={"Done"}
+                        // loading={this.state.isProcessing ? true : false}
+                        style={{ backgroundColor: colors.black, }}
+                        BtnTextStyles={{ color: '#ffffff' }}
+                    />
+                </View>}
             </View>
         </View>
     )

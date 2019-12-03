@@ -13,7 +13,7 @@ export default function homeReducer(state = initialState, action) {
     switch (action.type) {
         case constants.GET_CURRENT_LOCATION:
             return Object.assign({}, state, {
-                location: action.payload
+                location: action.payload,
             })
 
         case constants.UPDATE_INPUT_ADDRESS:
@@ -34,6 +34,18 @@ export default function homeReducer(state = initialState, action) {
                     pickUp: action.payload.key == 'pickUp' ? action.payload.value : state.inputData.pickUp,
                     dropOff: action.payload.key == 'dropOff' ? action.payload.value : state.inputData.dropOff
                 }
+            })
+
+        case constants.CLEAR_INPUT:
+            return Object.assign({}, state, {
+                searching: false,
+                inputData: {
+                    pickUp: action.payload == 'pickUp' ? undefined : state.inputData.pickUp,
+                    dropOff: action.payload == 'dropOff' ? undefined : state.inputData.dropOff
+                },
+                // selectedAddress: {
+                //     [action.payload]: {},
+                // }
             })
 
         case constants.TOGGLE_SEARCH_RESULT:

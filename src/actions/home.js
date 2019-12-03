@@ -33,6 +33,7 @@ const {
     REQUEST_RIDE,
     CANCEL_RIDE,
     MAP_REF,
+    CLEAR_INPUT,
 } = constants;
 
 const { width, height } = Dimensions.get("window");
@@ -51,6 +52,7 @@ export function getCurrentLocation() {
     return (dispatch) => {
         Geolocation.getCurrentPosition(
             (position) => {
+                // getSelectedAddress(position.coords)
                 dispatch({
                     type: GET_CURRENT_LOCATION,
                     payload: position
@@ -90,6 +92,15 @@ export function getInputData(payload) {
         payload
     }
 }
+
+export function clearInputData(payload) {
+    console.log(payload)
+    return {
+        type: CLEAR_INPUT,
+        payload
+    }
+}
+
 //toggle search result modal
 export function toggleSearchResultModal(payload) {
     return {
@@ -137,6 +148,7 @@ export function getAddressPredictions() {
 //get selected address
 
 export function getSelectedAddress(payload) {
+    console.log(payload)
     const dummyNumbers = {
         baseFare: 0.4,
         timeRate: 0.14,

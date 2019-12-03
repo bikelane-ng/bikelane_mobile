@@ -20,7 +20,9 @@ function navigate(routeName, params) {
 }
 
 function goBack() {
-    NavigationActions.back();
+    _navigator.dispatch(
+        NavigationActions.back()
+    )
 }
 
 function toggleDrawer(routeName, params) {

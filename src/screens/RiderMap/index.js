@@ -386,7 +386,9 @@ class RiderMap extends React.Component {
                         resultTypes={this.props.home.resultTypes}
                         predictions={this.props.home.predictions}
                         getInputData={this.props.getInputData}
+                        clearInputData={this.props.clearInputData}
                         getAddressPredictions={this.props.getAddressPredictions}
+                        selectedAddress={this.props.home.selectedAddress}
                         getSelectedAddress={this.props.getSelectedAddress}
                         closeToggleModal={this.props.closeToggleModal}
                         confirmSelection={this.confirmSelection}
