@@ -15,13 +15,8 @@ import MapViewDirections from 'react-native-maps-directions';
 import marker from '../../imgs/pickUp.png';
 // import pickUpMarker from '../../imgs/pickUp.png';
 import pickUpMarker from '../../imgs/dropOff.png';
-import { fonts } from "../../constants/DefaultProps";
+import { fonts, API_KEY } from "../../constants/DefaultProps";
 
-const LATITUDE_DELTA = 0.009;
-const LONGITUDE_DELTA = 0.009;
-const LATITUDE = 37.78825;
-const LONGITUDE = -122.4324;
-const API_KEY = "AIzaSyA-HjztLKyWGOUaIG9Bx_n6Ie_A5p1qMkQ";
 const MapContainer = ({ region, coordinate, selectedAddress, mapRef, nearbyDrivers, nearestDriver, onRegionChange, overlay }) => {
     const { pickUp, dropOff } = selectedAddress;
     function changeRegion(region) {
@@ -218,6 +213,7 @@ const MapContainer = ({ region, coordinate, selectedAddress, mapRef, nearbyDrive
                             origin={pickUp.location.latitude + "," + pickUp.location.longitude}
                             destination={dropOff.location.latitude + "," + dropOff.location.longitude}
                             apikey={API_KEY}
+                            strokeColor={'#ffffff'}
                             strokeWidth={3}
                         /> : null
                 }
