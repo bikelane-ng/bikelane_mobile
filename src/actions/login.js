@@ -13,12 +13,9 @@ export const doLogin = details => ({
             constants.AUTH_USER,
             {
                 type: constants.AUTH_USER_SUCCESS,
-                payload: (action, state, response) => response.json().then(data => {
-                    return {
-                        token: data.token,
-                        user: data.user
-                    }
-                })
+                payload: (action, state, response) => response.json().then(response => ({
+                    response
+                }))
             },
             {
                 type: constants.AUTH_USER_FAILURE,
@@ -29,6 +26,7 @@ export const doLogin = details => ({
                 }
             }
         ],
+        options: { timeout: 10000 },
         body: JSON.stringify(details),
         headers: {
             Accept: "application/json",

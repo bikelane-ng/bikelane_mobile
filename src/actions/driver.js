@@ -3,6 +3,94 @@ import {
     RSAA
 } from 'redux-api-middleware';
 import config from '../config';
+const BASE_URL = `${config.api.host}/api/driver`;
+
+export const driverReg = details => (console.log(details), {
+    [RSAA]: {
+        endpoint: `${BASE_URL}`,
+        method: 'POST',
+        types: [
+            constants.AUTH_DRIVER,
+            {
+                type: constants.AUTH_DRIVER_SUCCESS,
+                payload: (action, state, response) => response.json().then(data => {
+                    return {
+                        token: data.token,
+                        user: data.user
+                    }
+                })
+            },
+            {
+                type: constants.AUTH_DRIVER_FAILURE,
+                meta: (action, state, res) => {
+                    return {
+                        status: 'Network request failed'
+                    }
+                }
+            }
+        ],
+        body: JSON.stringify(details),
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+        },
+        credentials: "same-origin"
+    }
+});
+
+export function driverDetails(details) {
+    return (dispatch) => {
+        dispatch({
+            type: constants.DRIVER_DETAILS,
+            payload: details
+        })
+    }
+}
+
+export function bankDetails(details) {
+    return (dispatch) => {
+        dispatch({
+            type: constants.BANK_DETAILS,
+            payload: details
+        })
+    }
+}
+
+export function driverInfo(details) {
+    return (dispatch) => {
+        dispatch({
+            type: constants.DRIVER_INFO,
+            payload: details
+        })
+    }
+}
+
+export function addPhoto(photo) {
+    return (dispatch) => {
+        dispatch({
+            type: constants.ADD_PHOTO,
+            payload: photo
+        })
+    }
+}
+
+export function addBankDetails(details) {
+    return (dispatch) => {
+        dispatch({
+            type: constants.BANK_DETAILS,
+            payload: details
+        })
+    }
+}
+
+export function personalDocs(docs) {
+    return (dispatch) => {
+        dispatch({
+            type: constants.DRIVER_DOCS,
+            payload: docs
+        })
+    }
+}
 
 export const driverProfile = details => ({
     [RSAA]: {

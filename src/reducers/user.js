@@ -6,22 +6,26 @@ export default function userReducer(state = {}, action) {
         case constants.AUTH_USER:
             return Object.assign({}, state, {
                 isProcessing: true,
-                error: undefined
+                error: undefined,
+                loggedIn: undefined,
             })
         case constants.AUTH_USER_SUCCESS:
-            if (action.payload.token) {
-                AsyncStorage.setItem(constants.TOKEN, action.payload.token);
+            const { response } = action.payload;
+            if (response && response.data.token) {
+                AsyncStorage.setItem(constants.TOKEN, response.data.token);
                 return {
                     ...state,
                     isProcessing: false,
-                    isAuthenticated: true,
-                    current: action.payload.user
+                    loggedIn: true,
+                    role: response.data.user.role.name,
+                    current: response.data.user
                 };
             }
         case constants.AUTH_USER_FAILURE:
             return Object.assign({}, state, {
-                error: action.payload.status == 400 ? 'Invalid login credentials!' : `Login failed due to ${action.payload.status}`,
-                isProcessing: false
+                error: action.payload.response && action.payload.response.error,
+                isProcessing: false,
+                loggedIn: undefined,
             })
         case constants.REQUEST(constants.EDIT_USER):
             return Object.assign({}, state, {

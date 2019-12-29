@@ -1,7 +1,52 @@
 import * as constants from '../constants/ActionTypes';
 
-export default function driverReducer(state = {}, action) {
+const initialState = {
+    driverDetails: {},
+}
+
+export default function driverReducer(state = initialState, action) {
     switch (action.type) {
+        case constants.AUTH_DRIVER:
+            return Object.assign({}, state, {
+                isProcessing: true,
+                error: undefined
+            })
+        case constants.AUTH_DRIVER_SUCCESS:
+            if (action.payload.token) {
+                AsyncStorage.setItem(constants.TOKEN, action.payload.token);
+                return {
+                    ...state,
+                    isProcessing: false,
+                    isAuthenticated: true,
+                    current: action.payload.user
+                };
+            }
+        case constants.AUTH_DRIVER_FAILURE:
+            return Object.assign({}, state, {
+                error: action.payload.status == 400 ? 'Invalid login credentials!' : `Login failed due to ${action.payload.status}`,
+                isProcessing: false
+            })
+        case constants.DRIVER_DETAILS:
+            return Object.assign({}, state, {
+                driverDetails: Object.assign(state.driverDetails || {}, action.payload)
+            })
+        case constants.ADD_PHOTO:
+            return Object.assign({}, state, {
+                avatar: action.payload.photo,
+                driverDetails: Object.assign(state.driverDetails, action.payload)
+            })
+        // case constants.DRIVER_INFO:
+        //     return Object.assign({}, state, {
+        //         driverDetails: Object.assign(state.driverDetails, { driverInfo: action.payload })
+        //     })
+        // case constants.BANK_DETAILS:
+        //     return Object.assign({}, state, {
+        //         driverDetails: Object.assign(state.driverDetails, { driverInfo: { bankDetails: action.payload } })
+        //     })
+        case constants.DRIVER_DOCS:
+            return Object.assign({}, state, {
+                driverDetails: Object.assign(state.driverDetails, action.payload)
+            })
         case constants.DRIVER_PROFILE:
             return Object.assign({}, state, {
                 update: false,

@@ -8,19 +8,30 @@ import { createStackNavigator } from "react-navigation-stack";
 import { createDrawerNavigator, DrawerNavigatorItems } from "react-navigation-drawer";
 import Text from '../config/AppText';
 import SplashScreen from '../screens/Splash';
+import InitAppScreen from '../screens/InitializeApp';
 import RiderMapScreen from '../screens/RiderMap';
 import LocateDriver from '../screens/LocateDriver';
 import { Container, Header, Body, Thumbnail, Content, } from "native-base";
 import { colors, fonts } from '../constants/DefaultProps';
 import OTPScreen from '../screens/Auth/index';
 import VerifyOTPScreen from '../screens/Auth/VerifyOTP';
+import LoginScreen from '../screens/Auth/Login';
 import RegisterScreen from '../screens/Auth/Register';
 import OnBoardScreen from '../screens/Auth/OnBoard';
 import TripScreen from '../screens/Trips';
 import PromotionScreen from '../screens/Promotion';
 import SettingsScreen from '../screens/Settings';
-import { Logo } from './assets';
 import ProfileScreen from '../screens/Profile';
+import DriverAuthScreen from '../screens/Admin/Driver/index';
+import VerifyDriverOTPScreen from '../screens/Admin/Driver/VerifyOTP';
+import DriverDetailsScreen from '../screens/Admin/Driver/Details';
+import AddPhotoScreen from '../screens/Admin/Driver/AddPhoto';
+import BankDetailsScreen from '../screens/Admin/Driver/BankDetails';
+import PersonalDocumentScreen from '../screens/Admin/Driver/PersonalDocs';
+import PlateNumberScreen from '../screens/Admin/Driver/PlateNumber';
+
+/**Admin screens starts here */
+import AllDriverScreen from '../screens/Admin';
 
 const drawerContentComponents = (props) => (
     <Container>
@@ -72,17 +83,36 @@ const MyDrawerNavigator = createDrawerNavigator({
     contentComponent: drawerContentComponents,
 });
 
+const AdminDrawerNavigator = createDrawerNavigator({
+    'Drivers': {
+        screen: AllDriverScreen,
+    },
+}, {
+    initialRouteName: "Drivers",
+    contentComponent: drawerContentComponents,
+});
+
 const AppNavigator = createStackNavigator({
     Splash: SplashScreen,
+    Init: InitAppScreen,
     OTP: OTPScreen,
     VerifyOTP: VerifyOTPScreen,
+    Login: LoginScreen,
     Register: RegisterScreen,
     OnBoard: OnBoardScreen,
+    DriverAuth: DriverAuthScreen,
+    VerifyDriverOTP: VerifyDriverOTPScreen,
+    AddPhoto: AddPhotoScreen,
+    DriverDetails: DriverDetailsScreen,
+    BankDetails: BankDetailsScreen,
+    PlateNumber: PlateNumberScreen,
+    PersonalDocuments: PersonalDocumentScreen,
     RiderMap: MyDrawerNavigator,
+    Admin: AdminDrawerNavigator,
     LocateDriver: LocateDriver
 },
     {
-        initialRouteName: "RiderMap",
+        initialRouteName: "Init",
         headerMode: "none"
     }
 );

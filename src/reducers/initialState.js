@@ -16,6 +16,7 @@ export default {
     },
     driver: {
         update: false,
-        credentials: {}
+        credentials: {},
+        driverDetails:{},
     }
 }

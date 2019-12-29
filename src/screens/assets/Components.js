@@ -55,3 +55,13 @@ export const Ellipse = () => {
         </G>
     </Svg>
 }
+
+
+export const CheckCircle = () => {
+    return <Svg xmlns="http://www.w3.org/2000/svg" width="26.688" height="25.117" viewBox="0 0 26.688 25.117">
+        <G id="check-circle-07" transform="translate(-1 -3)">
+            <Path id="Path_91" data-name="Path 91" d="M24.713,12.5a10.6,10.6,0,0,1,.4,3.063A11.559,11.559,0,1,1,13.559,4a11.3,11.3,0,0,1,6.068,1.734" fill="none" stroke="#efd303" strokeLinecap="round" strokeLinejoin="round" strokeMiterlimit="10" stroke-width="2" />
+            <Path id="Path_92" data-name="Path 92" d="M14,14.091l4.623,4.623L31.338,6" transform="translate(-5.065 -0.844)" fill="none" stroke="#efd303" strokeLinecap="round" strokeLinejoin="round" strokeMiterlimit="10" strokeWidth="2" />
+        </G>
+    </Svg>
+}

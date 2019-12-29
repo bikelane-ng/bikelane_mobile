@@ -7,6 +7,7 @@ import register from './register';
 import app from './app';
 import driver from './driver';
 import home from './home';
+import admin from './admin';
 
 const rootReducer = combineReducers({
     app,
@@ -14,7 +15,8 @@ const rootReducer = combineReducers({
     login,
     register,
     driver,
-    home
+    home,
+    admin,
 });
 
 export default rootReducer;

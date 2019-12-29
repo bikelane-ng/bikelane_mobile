@@ -4,6 +4,7 @@ let success = 'success', danger = 'danger', info = 'info', warning = 'warning';
 export const colors = {
     white: "#ffffff",
     yellow: "#EFD303",
+    default: '#54058A',
     btnColor: "#B4B4B4",
     black: "#000000",
     danger: "#b20000",
@@ -11,8 +12,10 @@ export const colors = {
     info: "#4BB0C0",
     warning: "#FF9601",
     pink: "#DE408B",
-    bg: '#FAFAFA',
+    // bg: '#FAFAFA',
+    bg: '#EBEBEB',
     gray: '#707070',
+    default_text: '#9703FC',
 }
 //bg-F5FCFF
 
