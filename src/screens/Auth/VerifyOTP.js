@@ -45,7 +45,7 @@ class VerifyOTP extends React.Component {
                 <View style={styles.container}>
                     <Text style={{ textAlign: 'center', fontFamily: fonts.bold, fontSize: 20, }}>Enter the 4-digit code sent to your number</Text>
 
-                    <Form style={{ width: '100%', marginTop: 50, }}>
+                    {/* <Form style={{ width: '100%', marginTop: 50, }}>
                         <Item floatingLabel>
                             <Label style={{ fontFamily: fonts.default }}>OTP</Label>
                             <Input
@@ -55,11 +55,11 @@ class VerifyOTP extends React.Component {
                                 style={{ fontFamily: fonts.default, fontSize: 16, }}
                             />
                         </Item>
-                    </Form>
+                    </Form> */}
 
                     <OTPTextView
                         containerStyle={styles.textInputContainer}
-                        handleTextChange={text => this.setState({ text })}
+                        handleTextChange={otp => this.setState({ otp })}
                         inputCount={4}
                         keyboardType="numeric"
                     />
