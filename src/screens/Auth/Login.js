@@ -2,6 +2,7 @@ import React from 'react';
 import {
     View,
     StyleSheet,
+    TouchableOpacity,
 } from 'react-native';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -84,17 +85,26 @@ class Login extends React.Component {
                             />
                         </Item>
                     </View>
+
+                    <View style={{ alignItems: 'center', }}>
+                        <TouchableOpacity
+                            activeOpacity={0.7}
+                            onPress={() => this.props.navigation.navigate('OTP')}
+                        >
+                            <Text>Don't have an account? <Text style={{ color: colors.danger, }}>Sign up</Text></Text>
+                        </TouchableOpacity>
                 </View>
-                <View style={{ padding: 10, marginVertical: 10, alignItems: 'center', }}>
-                    <Button
-                        onPress={this.doLogin}
-                        BtnText={"Done"}
-                        loading={this.state.isProccessing}
-                        style={{ backgroundColor: colors.default, width: '75%', }}
-                        BtnTextStyles={{ color: '#ffffff' }}
-                    />
                 </View>
-            </SafeAreaView>
+            <View style={{ padding: 10, marginVertical: 10, alignItems: 'center', }}>
+                <Button
+                    onPress={this.doLogin}
+                    BtnText={"Done"}
+                    loading={this.state.isProccessing}
+                    style={{ backgroundColor: colors.default, width: '75%', }}
+                    BtnTextStyles={{ color: '#ffffff' }}
+                />
+            </View>
+            </SafeAreaView >
         )
     }
 }

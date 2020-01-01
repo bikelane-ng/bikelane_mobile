@@ -10,7 +10,7 @@ import { Form, Item, Label, Input } from 'native-base';
 import Text from '../../config/AppText';
 import { fonts, colors } from '../../constants/DefaultProps';
 import Button from '../../components/Button';
-import { SafeAreaView } from 'react-navigation';
+import { SafeAreaView, ScrollView } from 'react-navigation';
 import NavigationService from '../../navigation/NavigationService';
 
 class OTP extends React.Component {
@@ -22,6 +22,7 @@ class OTP extends React.Component {
         if (prevProps.validate && this.props.validate !== prevProps.validate) {
             // this.props.navigation.dispatch(NavigationService.resetAction('VerifyOTP'))
             this.props.navigation.navigate('VerifyOTP');
+            this.setState({ isProcessing: false, });
         }
     }
 
@@ -33,7 +34,7 @@ class OTP extends React.Component {
     render() {
         return (
             <SafeAreaView style={{ flex: 1, }}>
-                <View style={styles.container}>
+                <ScrollView contentContainerStyle={styles.container}>
                     <Text style={{ textAlign: 'center', fontFamily: fonts.bold, fontSize: 20, }}>Enter your phone number we will send you an OTP to verify your account</Text>
 
                     <Form style={{ marginTop: 50, marginHorizontal: 50 }}>
@@ -53,7 +54,7 @@ class OTP extends React.Component {
                             />
                         </Item>
                     </Form>
-                </View>
+                </ScrollView>
                 <View style={{ padding: 10, marginVertical: 10, alignItems: 'center', }}>
                     <Button
                         onPress={this.validateMobile}
@@ -70,7 +71,7 @@ class OTP extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flexGrow: 1,
         justifyContent: 'center',
         padding: 30,
     }
