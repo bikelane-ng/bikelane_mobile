@@ -1,4 +1,5 @@
 export const TOKEN = "TOKEN";
+export const INIT_SUCCESS = "INIT_SUCCESS";
 export const INPUT_NUMBER = "INPUT_NUMBER";
 export const VALIDATE_NUMBER = "VALIDATE_NUMBER";
 export const GENERATE_OTP = "GENERATE_OTP";
@@ -28,6 +29,8 @@ export const NEW_USER = "NEW_USER";
 export const REGISTER = "REGISTER";
 export const DRIVER_PROFILE = "DRIVER_PROFILE";
 export const ALL_DRIVERS = "ALL_DRIVERS";
+export const ALL_DRIVERS_SUCCESS = "ALL_DRIVERS_SUCCESS";
+export const ALL_DRIVERS_FAILURE = "ALL_DRIVERS_FAILURE";
 export const REG_DRIVER = "REG_DRIVER";
 export const REG_DRIVER_SUCCESS = "REG_DRIVER_SUCCESS";
 export const REG_DRIVER_FAILURE = "REG_DRIVER_FAILURE";

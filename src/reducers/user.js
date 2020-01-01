@@ -3,6 +3,11 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 export default function userReducer(state = {}, action) {
     switch (action.type) {
+        case constants.INIT_SUCCESS:
+            return Object.assign({}, state, {
+                current: action.payload,
+                loggedIn: true,
+            })
         case constants.AUTH_USER:
             return Object.assign({}, state, {
                 isProcessing: true,
@@ -13,6 +18,7 @@ export default function userReducer(state = {}, action) {
             const { response } = action.payload;
             if (response && response.data.token) {
                 AsyncStorage.setItem(constants.TOKEN, response.data.token);
+                AsyncStorage.setItem(constants.CURRENT_USER, JSON.stringify(response.data.user));
                 return {
                     ...state,
                     isProcessing: false,

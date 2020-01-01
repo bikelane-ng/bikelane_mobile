@@ -9,7 +9,7 @@ import {
 } from 'redux-api-middleware';
 import appReducer from '../reducers/index';
 import AsyncStorage from '@react-native-community/async-storage';
-// import apiAuthInjector from '../middlewares/apiAuthInjector';
+import sessionValidator from '../middlewares/sessionValidator';
 import initialState from '../reducers/initialState';
 import * as constants from '../constants/ActionTypes';
 
@@ -21,7 +21,7 @@ function rootReducer(state, action) {
     return appReducer(state, action)
 }
 
-const enhancers = compose(applyMiddleware(thunkMiddleware, apiMiddleware), window.__REDUX_DEVTOOLS_EXTENSION__ ? window.__REDUX_DEVTOOLS_EXTENSION__() : f => f);
+const enhancers = compose(applyMiddleware(thunkMiddleware, sessionValidator, apiMiddleware), window.__REDUX_DEVTOOLS_EXTENSION__ ? window.__REDUX_DEVTOOLS_EXTENSION__() : f => f);
 
 const store = createStore(rootReducer, initialState, enhancers);
 

@@ -38,9 +38,12 @@ class AddPhoto extends React.Component {
             width: 300,
             height: 400,
             cropping: true,
+            includeBase64: true,
         }).then(image => {
+            let pathParts = image.path.split('/');
             this.props.addPhoto({
-                avatar: image.path,
+                avatar: `data:image/jpeg;base64,${image.data}`,
+                avatarPrev: image.path,
             })
             // this.setState({ image: image.path })
             // console.log(image);
@@ -51,13 +54,13 @@ class AddPhoto extends React.Component {
         return (
             <SafeAreaView style={{ flex: 1, }}>
                 <View style={styles.container}>
-                    <Text style={{ textAlign: 'center', fontFamily: fonts.bold, fontSize: 20, }}>Add your picture</Text>
+                    <Text style={{ textAlign: 'center', fontFamily: fonts.bold, fontSize: 20, }}>Add driver picture</Text>
                     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', }}>
                         <View style={{ width: 200, height: 200, borderRadius: 200 / 2, backgroundColor: '#707070', justifyContent: 'center', alignItems: 'center' }}>
                             <Text style={{ color: colors.white }}>Please add image</Text>
-                            {this.props.avatar ? <Thumbnail
+                            {this.props.avatarPrev ? <Thumbnail
                                 style={{ width: '100%', height: '100%', borderRadius: 100, resizeMode: 'cover', position: 'absolute' }}
-                                source={{ uri: this.props.avatar || '' }} />:null}
+                                source={{ uri: this.props.avatarPrev || '' }} />:null}
                             <View style={{ position: 'absolute', bottom: 0, left: 24, }}>
                                 <TouchableWithoutFeedback onPress={() => this.openGallery()}>
                                     <Card style={styles.cardShadow}>
@@ -93,7 +96,7 @@ const styles = StyleSheet.create({
         height: 35,
         borderWidth: 1,
         borderRadius: 20,
-        backgroundColor: colors.yellow,
+        backgroundColor: colors.default_text,
         borderColor: '#ddd',
         borderBottomWidth: 0,
         shadowColor: '#000',
@@ -108,7 +111,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => ({
     added: state.driver.added,
-    avatar: state.driver.driverDetails.avatar,
+    avatarPrev: state.driver.driverDetails.avatarPrev,
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators(actionCreators, dispatch);

@@ -27,6 +27,12 @@ class Login extends React.Component {
             if (this.props.role === "ADMIN") {
                 this.props.navigation.navigate('Admin');
             }
+            if (this.props.role === "DRIVER") {
+                this.props.navigation.navigate('DriverMap');
+            }
+            if (this.props.role === "USER") {
+                this.props.navigation.navigate('RiderMap');
+            }
         }
     }
 

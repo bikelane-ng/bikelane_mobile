@@ -13,9 +13,13 @@ export const initializeApp = () => {
                 if (!token) return dispatch({
                     type: constants.INITIALIZATION_FAILURE
                 })
-                return dispatch({
-                    type: constants.INITIALIZE_APP
-                })
+                AsyncStorage.getItem(constants.CURRENT_USER)
+                    .then((user) => {
+                        return dispatch({
+                            type: constants.INIT_SUCCESS,
+                            payload: JSON.parse(user)
+                        })
+                    })
             })
     }
 }

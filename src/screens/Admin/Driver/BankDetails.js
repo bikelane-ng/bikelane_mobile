@@ -60,6 +60,7 @@ class BankDetails extends React.Component {
                             rounded>
                             <Input
                                 // onChangeText={e => this.accountNumber = e}
+                                keyboardType={'numeric'}
                                 defaultValue={this.props.driver.accountNumber}
                                 onEndEditing={(e) => this.props.driverDetails({ accountNumber: e.nativeEvent.text })}
                                 style={styles.input}
@@ -77,7 +78,6 @@ class BankDetails extends React.Component {
                                 // onChangeText={e => this.bank = e}
                                 defaultValue={this.props.driver.bank}
                                 onEndEditing={(e) => this.props.driverDetails({ bank: e.nativeEvent.text })}
-                                autoCapitalize={'none'}
                                 style={styles.input}
                             />
                         </Item>
@@ -86,7 +86,7 @@ class BankDetails extends React.Component {
                 </View>
                 <View style={{ padding: 10, marginVertical: 10, alignItems: 'center', }}>
                     <Button
-                        onPress={() => this.props.navigation.navigate('PlateNumber')}
+                        onPress={() => this.props.navigation.navigate('VehicleInfo')}
                         BtnText={"Continue"}
                         loading={this.state.isProccessing}
                         style={{ backgroundColor: colors.default, width: '80%', }}

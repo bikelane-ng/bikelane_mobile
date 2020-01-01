@@ -8,7 +8,7 @@ export default function appReducer(state = {}, action) {
             })
         case constants.INITIALIZATION_FAILURE:
             return Object.assign({}, state, {
-                isInitializedFailure: true
+                init_failed: true
             })
         case constants.INPUT_NUMBER:
             return {

@@ -17,7 +17,7 @@ import marker from '../../imgs/pickUp.png';
 import pickUpMarker from '../../imgs/dropOff.png';
 import { fonts, API_KEY } from "../../constants/DefaultProps";
 
-const MapContainer = ({ region, coordinate, selectedAddress, mapRef, nearbyDrivers, nearestDriver, onRegionChange, overlay }) => {
+const MapContainer = ({ region, coordinate, selectedAddress, mapRef, nearbyDrivers, nearestDriver, onRegionChange, overlay, role }) => {
     const { pickUp, dropOff } = selectedAddress;
     function changeRegion(region) {
         onRegionChange(region)
@@ -185,9 +185,9 @@ const MapContainer = ({ region, coordinate, selectedAddress, mapRef, nearbyDrive
     ];
     return (
         <View style={styles.mapContainer}>
-            <View style={{ position: 'absolute', top: 80, left: 25, zIndex: 1000, }}>
+            {role === 'USER' && <View style={{ position: 'absolute', top: 80, left: 25, zIndex: 1000, }}>
                 <Text style={{ fontFamily: fonts.bold, fontSize: 20, }}>Select your Drive</Text>
-            </View>
+            </View>}
             {overlay && <View style={{ backgroundColor: '#000000', opacity: 0.7, width: '100%', height: '100%', zIndex: 1000, position: 'absolute', top: 0 }}>
             </View>}
 
@@ -198,7 +198,7 @@ const MapContainer = ({ region, coordinate, selectedAddress, mapRef, nearbyDrive
                 // showUserLocation
                 followUserLocation={true}
                 zoomEnabled={true}
-                customMapStyle={customStyle}
+                // customMapStyle={customStyle}
                 // onRegionChangeComplete={onRegionChange}
                 // loadingEnabled
                 // onLayout={() => mapRef && mapRef.fitToCoordinates(coordinate, { edgePadding: { top: 10, right: 10, bottom: 10, left: 10 }, animated: true })}

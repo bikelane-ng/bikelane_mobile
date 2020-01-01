@@ -36,8 +36,34 @@ class PlateNumber extends React.Component {
                             rounded
                         >
                             <Input
-                                defaultValue={this.props.driver.plateNumber}
-                                onEndEditing={(e) => this.props.driverDetails({ plateNumber: e.nativeEvent.text })}
+                                defaultValue={this.props.driver.licensePlate}
+                                onEndEditing={(e) => this.props.driverDetails({ licensePlate: e.nativeEvent.text })}
+                                style={styles.input}
+                            />
+                        </Item>
+                    </View>
+                    <View style={{ marginVertical: 10 }}>
+                        <Text style={{ paddingVertical: 8, }}>Model</Text>
+                        <Item
+                            style={[{ backgroundColor: "#F7F7F7", height: 40, }, styles.cardShadow]}
+                            rounded
+                        >
+                            <Input
+                                defaultValue={this.props.driver.model}
+                                onEndEditing={(e) => this.props.driverDetails({ model: e.nativeEvent.text })}
+                                style={styles.input}
+                            />
+                        </Item>
+                    </View>
+                    <View style={{ marginVertical: 10 }}>
+                        <Text style={{ paddingVertical: 8, }}>Brand</Text>
+                        <Item
+                            style={[{ backgroundColor: "#F7F7F7", height: 40, }, styles.cardShadow]}
+                            rounded
+                        >
+                            <Input
+                                defaultValue={this.props.driver.brand}
+                                onEndEditing={(e) => this.props.driverDetails({ brand: e.nativeEvent.text })}
                                 style={styles.input}
                             />
                         </Item>

@@ -23,42 +23,32 @@ class InitializeApp extends React.Component {
     }
 
     componentDidMount() {
-        AsyncStorage.getItem(constants.TOKEN)
-            .then((token) => {
-                alert(token)
-                console.log(token)
-                if (!token) this.props.navigation.navigate('Login');
-                // this.props.InitializeApp({ token });
-                this.props.navigation.navigate('Admin');
-                // if (this.props.user.current.role.name === 'ADMIN') {
-                //     this.props.navigation.dispatch(NavigationService.resetAction('Admin'))
-                // } else {
-                //     this.props.navigation.dispatch(NavigationService.resetAction('RiderMap'))
-                // }
-            })
+        this.props.initApp();
     }
 
-    // UNSAFE_componentWillReceiveProps(nextProps) {
-    //     if (nextProps.user.authenticated && nextProps.user.current && nextProps.user.current != this.props.user.current) {
-    //         if (nextProps.user.current.role.name === 'ADMIN') {
-    //             this.props.navigation.dispatch(NavigationService.resetAction('Admin'))
-    //         } else {
-    //             this.props.navigation.dispatch(NavigationService.resetAction('RiderMap'))
-    //         }
-    //     }
-    //     if (nextProps.user.auth__failed && nextProps.user.auth__failed != this.props.user.auth__failed) {
-    //         this.props.navigation.navigate('Login');
-    //     }
-    //     // if (nextProps.styler.status != this.props.styler.status) {
-    //     //     if (typeof nextProps.styler.status !== 'undefined') {
-    //     //         if (nextProps.styler.status === true) {
-    //     //             this.props.navigation.dispatch(NavigationService.resetAction('Requests'))
-    //     //         } else {
-    //     //             this.props.navigation.dispatch(NavigationService.resetAction('StylerService'))
-    //     //         }
-    //     //     }
-    //     // }
-    // }
+    UNSAFE_componentWillReceiveProps(nextProps) {
+        if (nextProps.user.loggedIn && nextProps.user.current && nextProps.user.current != this.props.user.current) {
+            if (nextProps.user.current.role.name === 'ADMIN') {
+                this.props.navigation.dispatch(NavigationService.resetAction('Admin'))
+            } else if (nextProps.user.current.role.name === 'DRIVER') {
+                this.props.navigation.dispatch(NavigationService.resetAction('DriverMap'))
+            } else {
+                this.props.navigation.dispatch(NavigationService.resetAction('RiderMap'))
+            }
+        }
+        if (nextProps.app.init_failed && nextProps.app.init_failed != this.props.app.init_failed) {
+            this.props.navigation.navigate('Login');
+        }
+        // if (nextProps.styler.status != this.props.styler.status) {
+        //     if (typeof nextProps.styler.status !== 'undefined') {
+        //         if (nextProps.styler.status === true) {
+        //             this.props.navigation.dispatch(NavigationService.resetAction('Requests'))
+        //         } else {
+        //             this.props.navigation.dispatch(NavigationService.resetAction('StylerService'))
+        //         }
+        //     }
+        // }
+    }
 
     render() {
         return (
@@ -78,6 +68,7 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = state => ({
+    app: state.app,
     user: state.user,
     styler: state.styler,
 })

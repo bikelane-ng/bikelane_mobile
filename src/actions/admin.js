@@ -3,11 +3,11 @@ import {
     RSAA
 } from 'redux-api-middleware';
 import config from '../config';
-const BASE_URL = `${config.api.host}/api/driver`;
+const DRIVER_BASE_URL = `${config.api.host}/api/driver`;
 
 export const driverReg = details => (console.log(details), {
     [RSAA]: {
-        endpoint: `${BASE_URL}`,
+        endpoint: `${DRIVER_BASE_URL}`,
         method: 'POST',
         types: [
             constants.REG_DRIVER,
@@ -37,18 +37,18 @@ export const driverReg = details => (console.log(details), {
 
 export const allDrivers = _ => ({
     [RSAA]: {
-        endpoint: `${config.api.host}/api/driver/`,
+        endpoint: `${DRIVER_BASE_URL}`,
         method: 'GET',
         types: [
             constants.ALL_DRIVERS,
             {
-                type: constants.ALL_DRIVERS,
+                type: constants.ALL_DRIVERS_SUCCESS,
                 payload: (action, state, response) => response.json().then(response => ({
                     response
                 }))
             },
             {
-                type: constants.ALL_DRIVERS,
+                type: constants.ALL_DRIVERS_FAILURE,
                 meta: (action, state, res) => {
                     if (res) {
                         return {

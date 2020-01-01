@@ -26,6 +26,9 @@ import BookingDetails from '../BookingDetails';
 import DriverDetails from "../DriverDetails";
 import { Menu } from "../assets/Components";
 import RequestRide from "../RequestRide";
+import Header from "../../components/Header";
+import Button from '../../components/Button';
+import { colors } from "../../constants/DefaultProps";
 // import io from 'socket.io-client';
 // const socket = io('http://localhost:8085', {
 //     transports: ['websocket']
@@ -43,7 +46,7 @@ const LONGITUDE = -122.4324;
 const DEFAULT_PADDING = { top: 80, right: 80, bottom: 80, left: 80 };
 const SPACE = 0.01;
 
-class RiderMap extends React.Component {
+class DriverMap extends React.Component {
     constructor(props) {
         super(props);
 
@@ -318,7 +321,7 @@ class RiderMap extends React.Component {
             this.map.fitToCoordinates(this.getMarkers(), {
                 edgePadding: DEFAULT_PADDING,
                 animated: true,
-              });
+            });
         }, 0);
     }
 
@@ -328,83 +331,51 @@ class RiderMap extends React.Component {
         })
     }
 
-    confirmSelection = () => {
-        const { pickUp, dropOff } = this.props.home.selectedAddress;
-        this.props.closeToggleModal();
-        setTimeout(() => {
-            this.fitMarkers(pickUp.location, dropOff.location);
-        }, 0);
-    };
-
     toggleDrawer = () => this.props.navigation.toggleDrawer();
 
     render() {
         const width = Dimensions.get('screen').width;
         return (
             <View style={{ flex: 1, }}>
-                {!this.props.home.toggle ? <View style={{ flex: 1, }}>
-                    <MapContainer
-                        role={'USER'}
-                        region={this.state.region}
-                        coordinate={this.state.coordinate}
-                        selectedAddress={this.props.home.selectedAddress}
-                        mapRef={this.mapRef}
-                        nearbyDrivers={this.state.nearbyDrivers}
-                        nearestDriver={this.state.nearestDriver}
-                        onRegionChange={this.onRegionChange}
-                        overlay={this.props.home.overlay}
+                <MapContainer
+                    region={this.state.region}
+                    coordinate={this.state.coordinate}
+                    selectedAddress={this.props.home.selectedAddress}
+                    mapRef={this.mapRef}
+                    nearbyDrivers={this.state.nearbyDrivers}
+                    nearestDriver={this.state.nearestDriver}
+                    onRegionChange={this.onRegionChange}
+                    overlay={this.props.home.overlay}
+                />
+                <View style={{ position: 'absolute', zIndex: 1000, elevation: 5, width: '100%', }}>
+                    <Header
+                        avatar={this.props.avatar}
+                        hamburger={false}
+                        backAction={false}
+                        headerColor={'transparent'}
+                        role={'DRIVER'}
                     />
-                    <View style={{ position: 'absolute', top: 30, zIndex: 1000, elevation: 5, padding: 20, right: 0, }}>
-                        <TouchableOpacity
-                            onPress={this.toggleDrawer}
-                            activeOpacity={0.7}>
-                            <Menu />
-                        </TouchableOpacity>
-                    </View>
-                    {!this.props.home.inputData.pickUp &&
-                        !this.props.home.inputData.dropOff && <MapSearch
-                            toggleSearchModal={this.props.toggleSearchModal}
-                            getAddressPredictions={this.props.getAddressPredictions}
-                            getInputData={this.props.getInputData}
-                            inputData={this.props.home.inputData}
-                        />}
-                    {this.props.home.requestRide && !this.props.home.nearestDriver && <RequestRide
-                        cancelRide={this.props.cancelRide}
-                    />}
-                    {this.props.home.inputData.pickUp &&
-                        this.props.home.inputData.dropOff &&
-                        !this.props.home.requestRide && <BookingDetails
-                            distanceMatrix={this.props.home.distanceMatrix}
-                            fare={this.props.home.fare}
-                            requestRide={this.props.requestRide}
-                        />}
-                    {this.props.home.nearestDriver && <DriverDetails
-                        driverDetails={this.props.home.nearestDriver}
-                        cancelRide={this.props.cancelRide}
-                    />}
-                </View> : <SearchResult
-                        inputData={this.props.home.inputData}
-                        resultTypes={this.props.home.resultTypes}
-                        predictions={this.props.home.predictions}
-                        getInputData={this.props.getInputData}
-                        clearInputData={this.props.clearInputData}
-                        getAddressPredictions={this.props.getAddressPredictions}
-                        selectedAddress={this.props.home.selectedAddress}
-                        getSelectedAddress={this.props.getSelectedAddress}
-                        closeToggleModal={this.props.closeToggleModal}
-                        confirmSelection={this.confirmSelection}
-                        searching={this.props.home.searching}
-                        error={this.props.home.error}
-                    />}
+                </View>
+
+                <View style={{ position: 'absolute', zIndex: 1000, elevation: 5, bottom: 50, alignItems: 'center', width: '100%', }}>
+                    <Button
+                        // onPress={() => this.props.navigation.navigate('VehicleInfo')}
+                        BtnText={"Stop"}
+                        loading={this.state.isProccessing}
+                        style={{ backgroundColor: colors.default, width: '80%', }}
+                        BtnTextStyles={{ color: '#ffffff' }}
+                    />
+                </View>
             </View>
         );
     }
 }
 
 const mapStateToProps = state => ({
-    home: state.home
+    home: state.home,
+    avatar: state.user.current.avatar,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators(actionCreators, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(RiderMap);
+export default connect(mapStateToProps, mapDispatchToProps)(DriverMap);

@@ -14,6 +14,7 @@ import Button from '../../../components/Button';
 import { SafeAreaView } from "react-navigation";
 import ImagePicker from 'react-native-image-crop-picker';
 import { CheckCircle } from "../../assets/Components";
+import NavigationService from "../../../navigation/NavigationService";
 
 class PersonalDocs extends Component {
     constructor(props) {
@@ -31,8 +32,14 @@ class PersonalDocs extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(prevProps) {
-        if (prevProps.status && this.props.status !== prevProps.status) {
-
+        if (prevProps.error && this.props.error !== prevProps.error) {
+            alert(prevProps.error);
+            this.setState({ isProccessing: false, })
+        }
+        if (prevProps.success && this.props.success !== prevProps.success) {
+            alert('Driver has been created successfully');
+            this.setState({ isProccessing: false, })
+            this.props.navigation.dispatch(NavigationService.resetAction('Admin'))
         }
     }
 
@@ -42,10 +49,11 @@ class PersonalDocs extends Component {
             width: 300,
             height: 400,
             cropping: true,
+            includeBase64: true,
         }).then(image => {
             this.setState({ [key]: true })
             this.props.addPhoto({
-                [key]: image.path,
+                [key]: `data:image/jpeg;base64,${image.data}`,
             })
             // this.setState({ image: image.path })
             // console.log(image);
@@ -59,11 +67,13 @@ class PersonalDocs extends Component {
             firstName: driver.firstName,
             surname: driver.surname,
             email: driver.email,
-            mobile: this.props.mobile,
+            mobile: driver.mobile,
             driverInfo: {
                 houseAddress: driver.houseAddress,
                 vehicleInfo: {
-
+                    licensePlate: driver.licensePlate,
+                    model: driver.model,
+                    brand: driver.brand,
                 },
                 bankDetails: {
                     accountName: driver.accountName,
@@ -192,6 +202,8 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => ({
     driver: state.driver.driverDetails,
     mobile: state.app.mobile,
+    error: state.admin.error,
+    success: state.admin.success,
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators(actionCreators, dispatch);

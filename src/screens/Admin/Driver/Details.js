@@ -10,7 +10,7 @@ import { Form, Item, Label, Input } from 'native-base';
 import Text from '../../../config/AppText';
 import { fonts, colors } from '../../../constants/DefaultProps';
 import Button from '../../../components/Button';
-import { SafeAreaView } from 'react-navigation';
+import { SafeAreaView, ScrollView } from 'react-navigation';
 
 class DriverDetails extends React.Component {
     state = {
@@ -33,11 +33,27 @@ class DriverDetails extends React.Component {
     render() {
         return (
             <SafeAreaView style={{ flex: 1, }}>
-                <View style={styles.container}>
-                    <Text style={{ fontFamily: fonts.bold, fontSize: 20, paddingVertical: 30, }}>Key in your details</Text>
+                <ScrollView contentContainerStyle={styles.container}>
+                    <Text style={{ fontFamily: fonts.bold, fontSize: 20, paddingVertical: 30, }}>Key in driver details</Text>
 
                     {this.state.validationErr && <Text style={{ color: colors.danger }}>One or more fields are missing</Text>}
                     {this.state.pwMatchErr && <Text style={{ color: colors.danger }}>Password and confirm password does not match</Text>}
+
+                    <View style={{ marginVertical: 10 }}>
+                        <Text style={{ paddingVertical: 8, }}>Driver's mobile number</Text>
+                        <Item
+                            style={[{ backgroundColor: "#F7F7F7", height: 40, }, styles.cardShadow]}
+                            rounded
+                        >
+                            <Input
+                                keyboardType={'numeric'}
+                                defaultValue={this.props.driver.mobile}
+                                onEndEditing={(e) => this.props.driverDetails({ mobile: e.nativeEvent.text })}
+                                style={styles.input}
+                            />
+                        </Item>
+                    </View>
+
                     <View style={{ marginVertical: 10 }}>
                         <Text style={{ paddingVertical: 8, }}>Driver's first name</Text>
                         <Item
@@ -95,7 +111,6 @@ class DriverDetails extends React.Component {
                                 // onChangeText={e => this.houseAddress = e}
                                 defaultValue={this.props.driver.houseAddress}
                                 onEndEditing={(e) => this.props.driverDetails({ houseAddress: e.nativeEvent.text })}
-                                autoCapitalize={'none'}
                                 style={styles.input}
                             />
                         </Item>
@@ -129,7 +144,7 @@ class DriverDetails extends React.Component {
                             />
                         </Item>
                     </View>
-                </View>
+                </ScrollView>
                 <View style={{ padding: 10, marginVertical: 10, alignItems: 'center', }}>
                     <Button
                         onPress={() => this.props.navigation.navigate('AddPhoto')}
@@ -146,7 +161,7 @@ class DriverDetails extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flexGrow: 1,
         justifyContent: 'center',
         padding: 30,
     },

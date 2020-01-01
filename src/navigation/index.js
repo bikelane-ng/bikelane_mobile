@@ -28,10 +28,14 @@ import DriverDetailsScreen from '../screens/Admin/Driver/Details';
 import AddPhotoScreen from '../screens/Admin/Driver/AddPhoto';
 import BankDetailsScreen from '../screens/Admin/Driver/BankDetails';
 import PersonalDocumentScreen from '../screens/Admin/Driver/PersonalDocs';
-import PlateNumberScreen from '../screens/Admin/Driver/PlateNumber';
+import VehicleInfoScreen from '../screens/Admin/Driver/VehicleInfo';
+
+/**Driver screens starts here */
+import DriverMapScreen from '../screens/DriverMap';
 
 /**Admin screens starts here */
 import AllDriverScreen from '../screens/Admin';
+import AdminDriverDetailScreen from '../screens/Admin/DriverDetails';
 
 const drawerContentComponents = (props) => (
     <Container>
@@ -105,11 +109,13 @@ const AppNavigator = createStackNavigator({
     AddPhoto: AddPhotoScreen,
     DriverDetails: DriverDetailsScreen,
     BankDetails: BankDetailsScreen,
-    PlateNumber: PlateNumberScreen,
+    VehicleInfo: VehicleInfoScreen,
     PersonalDocuments: PersonalDocumentScreen,
     RiderMap: MyDrawerNavigator,
     Admin: AdminDrawerNavigator,
-    LocateDriver: LocateDriver
+    LocateDriver: LocateDriver,
+    AdminDriverDetail: AdminDriverDetailScreen,
+    DriverMap: DriverMapScreen,
 },
     {
         initialRouteName: "Init",
