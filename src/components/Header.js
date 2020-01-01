@@ -38,11 +38,16 @@ export default function ({ hamburger, backAction, wallet, admin, headerColor, ro
                 {role === 'DRIVER' && <>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', }}>
-                            <Thumbnail
-                                style={{ width: 40, height: 40, borderRadius: 40 / 2, marginHorizontal: 10, }}
-                                source={{ uri: avatar }}
+                            <TouchableOpacity
+                                activeOpacity={0.8}
+                                onPress={() => NavigationService.toggleDrawer()}
+                            >
+                                <Thumbnail
+                                    style={{ width: 40, height: 40, borderRadius: 40 / 2, marginHorizontal: 10, }}
+                                    source={{ uri: avatar }}
                                 // source={require('../imgs/avatar.png')}
-                            />
+                                />
+                            </TouchableOpacity>
                             <Text style={{ color: colors.black, fontFamily: fonts.medium, }}>N15,000</Text>
                         </View>
                         <View style={{ backgroundColor: colors.default_text, width: 60, height: 30, alignItems: 'center', justifyContent: 'center', alignSelf: 'center', borderRadius: 10, marginRight: 10, }}>

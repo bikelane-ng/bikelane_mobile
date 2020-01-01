@@ -219,7 +219,7 @@ const MapContainer = ({ region, coordinate, selectedAddress, mapRef, nearbyDrive
                 }
 
                 {pickUp &&
-                    <MapView.Marker
+                    <MapView.Marker.Animated
                         coordinate={pickUp.location}
                         image={pickUpMarker}
                         // pinColor="green"
@@ -228,7 +228,7 @@ const MapContainer = ({ region, coordinate, selectedAddress, mapRef, nearbyDrive
                 }
 
                 {dropOff &&
-                    <MapView.Marker
+                    <MapView.Marker.Animated
                         coordinate={dropOff.location}
                         pinColor="blue"
                         title={dropOff.name}
@@ -247,7 +247,7 @@ const MapContainer = ({ region, coordinate, selectedAddress, mapRef, nearbyDrive
                 }
 
                 {nearestDriver && Object.keys(nearestDriver).length > 0 &&
-                    <MapView.Marker
+                    <MapView.Marker.Animated
                         coordinate={nearestDriver.position}
                         // pinColor="yellow"
                         image={require('../../imgs/taxi1-sm.png')}
