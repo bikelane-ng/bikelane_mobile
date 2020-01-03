@@ -195,8 +195,10 @@ const MapContainer = ({ region, coordinate, selectedAddress, mapRef, nearbyDrive
                 ref={mapRef}
                 style={styles.map}
                 provider={PROVIDER_GOOGLE}
-                // showUserLocation
+                showsUserLocation={true}
+                showsMyLocationButton={true}
                 followUserLocation={true}
+                showsCompass={true}
                 zoomEnabled={true}
                 // customMapStyle={customStyle}
                 // onRegionChangeComplete={onRegionChange}
@@ -213,13 +215,13 @@ const MapContainer = ({ region, coordinate, selectedAddress, mapRef, nearbyDrive
                             origin={pickUp.location.latitude + "," + pickUp.location.longitude}
                             destination={dropOff.location.latitude + "," + dropOff.location.longitude}
                             apikey={API_KEY}
-                            strokeColor={'#ffffff'}
+                            strokeColor={'#000000'}
                             strokeWidth={3}
                         /> : null
                 }
 
                 {pickUp &&
-                    <MapView.Marker.Animated
+                    <MapView.Marker
                         coordinate={pickUp.location}
                         image={pickUpMarker}
                         // pinColor="green"
@@ -228,7 +230,7 @@ const MapContainer = ({ region, coordinate, selectedAddress, mapRef, nearbyDrive
                 }
 
                 {dropOff &&
-                    <MapView.Marker.Animated
+                    <MapView.Marker
                         coordinate={dropOff.location}
                         pinColor="blue"
                         title={dropOff.name}
@@ -247,7 +249,7 @@ const MapContainer = ({ region, coordinate, selectedAddress, mapRef, nearbyDrive
                 }
 
                 {nearestDriver && Object.keys(nearestDriver).length > 0 &&
-                    <MapView.Marker.Animated
+                    <MapView.Marker
                         coordinate={nearestDriver.position}
                         // pinColor="yellow"
                         image={require('../../imgs/taxi1-sm.png')}
@@ -270,10 +272,10 @@ const MapContainer = ({ region, coordinate, selectedAddress, mapRef, nearbyDrive
             {/* <View style={styles.markerFixed}>
                 <Image style={styles.marker} source={marker} />
             </View> */}
-
+{/* 
             <View pointerEvents="none" style={styles.markerFixed}>
                 <Image style={{ width: 40, height: 40 }} pointerEvents="none" source={marker} />
-            </View>
+            </View> */}
         </View>
     );
 }

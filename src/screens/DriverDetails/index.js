@@ -58,7 +58,7 @@ const DriverDetails = ({ driverDetails, cancelRide }) => {
                                 <Button
                                     onPress={() => cancelRide()}
                                     BtnText={"Cancel Ride"}
-                                    style={{ backgroundColor: colors.black, }}
+                                    // style={{ backgroundColor: colors.black, }}
                                     BtnTextStyles={{ color: '#ffffff' }}
                                 />
                             </View>

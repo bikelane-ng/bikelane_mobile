@@ -46,7 +46,7 @@ class OnBoard extends React.Component {
                     <Button
                         onPress={() => this.props.navigation.dispatch(NavigationService.resetAction('RiderMap'))}
                         BtnText={"Let's get started"}
-                        style={{ backgroundColor: colors.black, width: '50%', }}
+                        style={{ width: '50%', }}
                         BtnTextStyles={{ color: '#ffffff' }}
                     />
                 </View>

@@ -124,7 +124,7 @@ class Register extends React.Component {
                         onPress={this.doRegister}
                         BtnText={"Continue"}
                         loading={this.state.isProccessing}
-                        style={{ backgroundColor: colors.black, width: '40%', }}
+                        style={{ width: '40%', }}
                         BtnTextStyles={{ color: '#ffffff' }}
                     />
                 </View>

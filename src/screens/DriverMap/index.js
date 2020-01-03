@@ -362,7 +362,7 @@ class DriverMap extends React.Component {
                         // onPress={() => this.props.navigation.navigate('VehicleInfo')}
                         BtnText={"Stop"}
                         loading={this.state.isProccessing}
-                        style={{ backgroundColor: colors.default, width: '80%', }}
+                        style={{ width: '80%', }}
                         BtnTextStyles={{ color: '#ffffff' }}
                     />
                 </View>

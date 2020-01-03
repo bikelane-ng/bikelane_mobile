@@ -100,7 +100,7 @@ class Login extends React.Component {
                     onPress={this.doLogin}
                     BtnText={"Done"}
                     loading={this.state.isProccessing}
-                    style={{ backgroundColor: colors.default, width: '75%', }}
+                    style={{ width: '75%', }}
                     BtnTextStyles={{ color: '#ffffff' }}
                 />
             </View>

@@ -69,7 +69,7 @@ class VerifyOTP extends React.Component {
                         onPress={this.verifyOTP}
                         BtnText={"Continue"}
                         loading={this.state.isProcessing}
-                        style={{ backgroundColor: colors.black, width: '40%', }}
+                        style={{ width: '40%', }}
                         BtnTextStyles={{ color: '#ffffff' }}
                     />
                 </View>

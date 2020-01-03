@@ -1,5 +1,9 @@
 // import update from "react-addons-update";
 import * as constants from "../constants/ActionTypes";
+import {
+    CALL_API,
+    RSAA
+} from 'redux-api-middleware';
 import { Dimensions } from "react-native"
 import Geolocation from '@react-native-community/geolocation';
 import RNGooglePlaces from "react-native-google-places";
@@ -10,10 +14,12 @@ import { FakeDrivers } from "../fakers/fake_drivers";
 var polyline = require('@mapbox/polyline');
 import haversine from "haversine";
 import { API_KEY } from "../constants/DefaultProps";
+import config from "../config";
 Geocoder.init(API_KEY); // use a valid API key
 
 const {
     GET_CURRENT_LOCATION,
+    GET_CURRENT_ADDRESS,
     GET_INPUT,
     TOGGLE_SEARCH_RESULT,
     UNTOGGLE_SEARCH_RESULT,
@@ -32,9 +38,14 @@ const {
     BOOK_CAR,
     GET_NEARBY_DRIVERS,
     REQUEST_RIDE,
+    REQUEST_RIDE_SUCCESS,
+    REQUEST_RIDE_FAILURE,
     CANCEL_RIDE,
     MAP_REF,
     CLEAR_INPUT,
+    ESITMATE_RIDE_DETAILS,
+    ESITMATE_RIDE_DETAILS_SUCCESS,
+    ESITMATE_RIDE_DETAILS_FAILURE,
 } = constants;
 
 const { width, height } = Dimensions.get("window");
@@ -62,6 +73,24 @@ export function getCurrentLocation() {
             (error) => console.log(error.message),
             { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
         );
+    }
+}
+
+export function getCurrentAddress() {
+    return (dispatch) => {
+        RNGooglePlaces.getCurrentPlace()
+            .then((results) => {
+                console.log(results)
+                results.reduce(function (prev, current) {
+                    if ((prev.likelihood > current.likelihood)) {
+                        dispatch({
+                            type: GET_CURRENT_ADDRESS,
+                            payload: prev,
+                        });
+                    }
+                })
+            })
+            .catch((error) => console.log(error.message));
     }
 }
 
@@ -95,7 +124,6 @@ export function getInputData(payload) {
 }
 
 export function clearInputData(payload) {
-    console.log(payload)
     return {
         type: CLEAR_INPUT,
         payload
@@ -164,47 +192,47 @@ export function getSelectedAddress(payload) {
                     payload: results
                 })
             })
-            .then(() => {
-                //Get the distance and time
-                if (store().home.selectedAddress.pickUp && store().home.selectedAddress.dropOff) {
-                    let query = {
-                        origins: store().home.selectedAddress.pickUp.location.latitude + "," + store().home.selectedAddress.pickUp.location.longitude,
-                        destinations: store().home.selectedAddress.dropOff.location.latitude + "," + store().home.selectedAddress.dropOff.location.longitude,
-                        mode: "driving",
-                        key: API_KEY
-                    }
-                    Axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${query.origins}&destinations=${query.destinations}&mode=${query.mode}&key=${query.key}`)
-                        .then(response => {
-                            dispatch({
-                                type: GET_DISTANCE_MATRIX,
-                                payload: response.data
-                            });
-                        })
-                        .catch(err => {
-                            dispatch({
-                                type: GET_DISTANCE_MATRIX_ERROR,
-                                payload: err
-                            });
-                        })
-                }
-                setTimeout(function () {
-                    if (store().home.selectedAddress.pickUp && store().home.selectedAddress.dropOff) {
-                        const fare = calculateFare(
-                            dummyNumbers.baseFare,
-                            dummyNumbers.timeRate,
-                            store().home.distanceMatrix.rows[0].elements[0].duration.value,
-                            dummyNumbers.distanceRate,
-                            store().home.distanceMatrix.rows[0].elements[0].distance.value,
-                            dummyNumbers.surge,
-                        );
-                        dispatch({
-                            type: GET_FARE,
-                            payload: fare
-                        })
-                    }
-                }, 2000)
+            // .then(() => {
+            //     //Get the distance and time
+            //     if (store().home.selectedAddress.pickUp && store().home.selectedAddress.dropOff) {
+            //         let query = {
+            //             origins: store().home.selectedAddress.pickUp.location.latitude + "," + store().home.selectedAddress.pickUp.location.longitude,
+            //             destinations: store().home.selectedAddress.dropOff.location.latitude + "," + store().home.selectedAddress.dropOff.location.longitude,
+            //             mode: "driving",
+            //             key: API_KEY
+            //         }
+            //         Axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${query.origins}&destinations=${query.destinations}&mode=${query.mode}&key=${query.key}`)
+            //             .then(response => {
+            //                 dispatch({
+            //                     type: GET_DISTANCE_MATRIX,
+            //                     payload: response.data
+            //                 });
+            //             })
+            //             .catch(err => {
+            //                 dispatch({
+            //                     type: GET_DISTANCE_MATRIX_ERROR,
+            //                     payload: err
+            //                 });
+            //             })
+            //     }
+            //     setTimeout(function () {
+            //         if (store().home.selectedAddress.pickUp && store().home.selectedAddress.dropOff) {
+            //             const fare = calculateFare(
+            //                 dummyNumbers.baseFare,
+            //                 dummyNumbers.timeRate,
+            //                 store().home.distanceMatrix.rows[0].elements[0].duration.value,
+            //                 dummyNumbers.distanceRate,
+            //                 store().home.distanceMatrix.rows[0].elements[0].distance.value,
+            //                 dummyNumbers.surge,
+            //             );
+            //             dispatch({
+            //                 type: GET_FARE,
+            //                 payload: fare
+            //             })
+            //         }
+            //     }, 2000)
 
-            })
+            // })
             .catch((error) =>
                 setTimeout(() => {
                     dispatch({
@@ -275,7 +303,7 @@ export function nearestDriver(driver) {
     }
 }
 
-export function requestRide() {
+export function requestRide___() {
     return (dispatch, store) => {
         dispatch({
             type: REQUEST_RIDE,
@@ -327,3 +355,65 @@ export function confirmSelection() {
         })
     }
 }
+
+export const estimateRideDetails = details => ({
+    [RSAA]: {
+        endpoint: `${config.api.host}/api/ride/estimatedRideDetails`,
+        method: 'POST',
+        types: [
+            constants.ESITMATE_RIDE_DETAILS,
+            {
+                type: constants.ESITMATE_RIDE_DETAILS_SUCCESS,
+                payload: (action, state, response) => response.json().then(response => ({
+                    response
+                }))
+            },
+            {
+                type: constants.ESITMATE_RIDE_DETAILS_FAILURE,
+                meta: (action, state, res) => {
+                    return {
+                        status: 'Network request failed'
+                    }
+                }
+            }
+        ],
+        options: { timeout: 10000 },
+        body: JSON.stringify(details),
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+        },
+        credentials: "same-origin"
+    }
+});
+
+export const requestRide = details => (console.log(details), {
+    [RSAA]: {
+        endpoint: `${config.api.host}/api/ride`,
+        method: 'POST',
+        types: [
+            constants.REQUEST_RIDE,
+            {
+                type: constants.REQUEST_RIDE_SUCCESS,
+                payload: (action, state, response) => response.json().then(response => ({
+                    response
+                }))
+            },
+            {
+                type: constants.REQUEST_RIDE_FAILURE,
+                meta: (action, state, res) => {
+                    return {
+                        status: 'Network request failed'
+                    }
+                }
+            }
+        ],
+        options: { timeout: 10000 },
+        body: JSON.stringify(details),
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+        },
+        credentials: "same-origin"
+    }
+});

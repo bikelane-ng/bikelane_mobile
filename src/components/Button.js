@@ -8,7 +8,7 @@ const PjButton = ({ BtnType, BtnColor, BtnText, onPress, BtnTextStyles, style, l
   const mainStyles = [{
     width: BtnType === 'small' ? 103 : "100%",
     height: BtnType === 'small' ? 36 : 42,
-    backgroundColor: BtnColor,
+    backgroundColor: colors.default,
     borderRadius: 30,
     justifyContent: "center",
   }];

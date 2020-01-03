@@ -56,7 +56,7 @@ const SearchResult = ({
                         <View style={{ flexDirection: "row" }}>
                             <View style={{ marginTop: 15, padding: 10 }}>
                                 <View style={{ width: 12, height: 12, borderRadius: 12 / 2, marginLeft: -1.8, borderWidth: 1, borderColor: "#9C9C9C", alignItems: "center", justifyContent: "center" }}>
-                                    <View style={{ height: 6, width: 6, borderRadius: 6 / 2, borderWidth: 1, borderColor: colors.yellow, backgroundColor: colors.yellow }}></View>
+                                    <View style={{ height: 6, width: 6, borderRadius: 6 / 2, borderWidth: 1, borderColor: colors.default, backgroundColor: colors.default }}></View>
                                 </View>
                                 <View style={{ marginLeft: 2.5, marginTop: 2 }}>
                                     <Text style={{ lineHeight: 5, color: "#D1D2D2" }}>.</Text>
@@ -126,7 +126,7 @@ const SearchResult = ({
 
                 <View style={styles.searchResultsWrapper}>
                     <List
-                        dataArray={predictions}
+                        dataArray={predictions && predictions}
                         keyExtractor={(item, index) => index.toString()}
                         renderRow={(item) =>
                             <TouchableOpacity
@@ -134,14 +134,14 @@ const SearchResult = ({
                                 onPress={() => handleSelectedAddress(item.placeID)}
                                 style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#ffffff', marginTop: 2, padding: 20, }}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <Icon style={{ fontSize: 20, color: colors.yellow }} name='ios-pin' />
+                                    <Icon style={{ fontSize: 20, color: colors.default }} name='ios-pin' />
                                     <View style={{ paddingLeft: 30, paddingRight: 10 }}>
                                         <Text style={styles.primaryText}>{item.primaryText}</Text>
                                         <Text style={styles.secondaryText}>{item.secondaryText}</Text>
                                     </View>
                                 </View>
                                 <View>
-                                    <Icon style={{ color: colors.yellow, fontSize: 20, }} name='ios-heart' />
+                                    <Icon style={{ color: colors.default, fontSize: 20, }} name='ios-heart' />
                                 </View>
                             </TouchableOpacity>
                         }
@@ -154,7 +154,7 @@ const SearchResult = ({
                         onPress={() => confirmSelection()}
                         BtnText={"Done"}
                         // loading={this.state.isProcessing ? true : false}
-                        style={{ backgroundColor: colors.black, }}
+                        // style={{ backgroundColor: colors.black, }}
                         BtnTextStyles={{ color: '#ffffff' }}
                     />
                 </View>}

@@ -31,8 +31,8 @@ export default function homeReducer(state = initialState, action) {
                 searching: true,
                 resultTypes: action.payload.key,
                 inputData: {
-                    pickUp: action.payload.key == 'pickUp' ? action.payload.value : state.inputData.pickUp,
-                    dropOff: action.payload.key == 'dropOff' ? action.payload.value : state.inputData.dropOff
+                    pickUp: action.payload.key == 'pickUp' ? action.payload.value || undefined : state.inputData.pickUp,
+                    dropOff: action.payload.key == 'dropOff' ? action.payload.value || undefined : state.inputData.dropOff
                 }
             })
 
@@ -72,6 +72,16 @@ export default function homeReducer(state = initialState, action) {
                 searching: false,
                 error: action.payload,
                 predictions: undefined
+            })
+        case constants.GET_CURRENT_ADDRESS:
+            return Object.assign({}, state, {
+                resultTypes: 'pickUp',
+                inputData: {
+                    pickUp: action.payload.name,
+                },
+                selectedAddress: {
+                    pickUp: action.payload,
+                }
             })
         case constants.GET_SELECTED_ADDRESS:
             return Object.assign({}, state, {
@@ -123,11 +133,11 @@ export default function homeReducer(state = initialState, action) {
             return Object.assign({}, state, {
                 fare: action.payload
             })
-        case constants.REQUEST_RIDE:
-            return Object.assign({}, state, {
-                requestRide: true,
-                overlay: true,
-            })
+        // case constants.REQUEST_RIDE:
+        //     return Object.assign({}, state, {
+        //         requestRide: true,
+        //         overlay: true,
+        //     })
         case constants.CANCEL_RIDE:
             return Object.assign({}, state, {
                 requestRide: false,
@@ -141,6 +151,50 @@ export default function homeReducer(state = initialState, action) {
                     ...state,
                     mapRef: action.payload,
                 }
+            }
+        case constants.ESITMATE_RIDE_DETAILS:
+            return {
+                ...state,
+                estimate: true,
+                processing: true,
+                toggle: false,
+                error: undefined,
+                estimatedRideDetails: undefined,
+            }
+        case constants.ESITMATE_RIDE_DETAILS_SUCCESS:
+            return {
+                ...state,
+                processing: undefined,
+                estimatedRideDetails: action.payload.response,
+            }
+        case constants.ESITMATE_RIDE_DETAILS_FAILURE:
+            return {
+                ...state,
+                processing: undefined,
+                error: `${action.payload.name} - ${action.payload.message}`,
+            }
+
+            case constants.REQUEST_RIDE:
+            return {
+                ...state,
+                estimate: false,
+                requestRide: true,
+                requestedRide: undefined,
+                error: undefined,
+            }
+        case constants.REQUEST_RIDE_SUCCESS:
+            return {
+                ...state,
+                // processing: undefined,
+                requestedRide: action.payload.response,
+            }
+        case constants.REQUEST_RIDE_FAILURE:
+            return {
+                ...state,
+                // processing: undefined,'
+                requestRide: undefined,
+                estimate: true,
+                error: `${action.payload.name} - ${action.payload.message}`,
             }
         default:
             return state;

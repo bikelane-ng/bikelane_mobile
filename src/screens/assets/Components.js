@@ -3,10 +3,11 @@ import Svg, {
     Path, Circle, Defs, ClipPath, Rect, G, Line,
 } from "react-native-svg";
 import { Text } from 'react-native';
+import { colors } from '../../constants/DefaultProps';
 
 export const Menu = () => {
     return <Svg id="Menu" xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 52 52">
-        <Circle id="Oval" cx="26" cy="26" r="26" fill="#EFD303" />
+        <Circle id="Oval" cx="26" cy="26" r="26" fill={colors.default} />
         <Path id="Line" d="M.342,1H17.45" transform="translate(15 22.125)" fill="none" stroke="#fff" strokeLinecap="square" strokeMiterlimit="10" strokeWidth="2" />
         <Path id="Line_Copy" d="M.325,1H16.577" transform="translate(19.444 30.125)" fill="none" stroke="#fff" strokeLinecap="square" strokeMiterlimit="10" strokeWidth="2" />
     </Svg>
@@ -58,10 +59,10 @@ export const Ellipse = () => {
 
 
 export const CheckCircle = () => {
-    return <Svg xmlns="http://www.w3.org/2000/svg" width="26.688" height="25.117" viewBox="0 0 26.688 25.117">
+    return <Svg xmlns="http://www.w3.org/2000/svg" width="46.688" height="45.117" viewBox="0 0 26.688 25.117">
         <G id="check-circle-07" transform="translate(-1 -3)">
-            <Path id="Path_91" data-name="Path 91" d="M24.713,12.5a10.6,10.6,0,0,1,.4,3.063A11.559,11.559,0,1,1,13.559,4a11.3,11.3,0,0,1,6.068,1.734" fill="none" stroke="#efd303" strokeLinecap="round" strokeLinejoin="round" strokeMiterlimit="10" stroke-width="2" />
-            <Path id="Path_92" data-name="Path 92" d="M14,14.091l4.623,4.623L31.338,6" transform="translate(-5.065 -0.844)" fill="none" stroke="#efd303" strokeLinecap="round" strokeLinejoin="round" strokeMiterlimit="10" strokeWidth="2" />
+            <Path id="Path_91" data-name="Path 91" d="M24.713,12.5a10.6,10.6,0,0,1,.4,3.063A11.559,11.559,0,1,1,13.559,4a11.3,11.3,0,0,1,6.068,1.734" fill="none" stroke="#ffffff" strokeLinecap="round" strokeLinejoin="round" strokeMiterlimit="10" stroke-width="2" />
+            <Path id="Path_92" data-name="Path 92" d="M14,14.091l4.623,4.623L31.338,6" transform="translate(-5.065 -0.844)" fill="none" stroke="#ffffff" strokeLinecap="round" strokeLinejoin="round" strokeMiterlimit="10" strokeWidth="2" />
         </G>
     </Svg>
 }
