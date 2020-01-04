@@ -15,7 +15,7 @@ import MapViewDirections from 'react-native-maps-directions';
 import marker from '../../imgs/pickUp.png';
 // import pickUpMarker from '../../imgs/pickUp.png';
 import pickUpMarker from '../../imgs/dropOff.png';
-import { fonts, API_KEY } from "../../constants/DefaultProps";
+import { fonts, API_KEY, colors } from "../../constants/DefaultProps";
 
 const MapContainer = ({ region, coordinate, selectedAddress, mapRef, nearbyDrivers, nearestDriver, onRegionChange, overlay, role }) => {
     const { pickUp, dropOff } = selectedAddress;
@@ -223,8 +223,8 @@ const MapContainer = ({ region, coordinate, selectedAddress, mapRef, nearbyDrive
                 {pickUp &&
                     <MapView.Marker
                         coordinate={pickUp.location}
-                        image={pickUpMarker}
-                        // pinColor="green"
+                        // image={pickUpMarker}
+                        pinColor={colors.default}
                         title={pickUp.name}
                     />
                 }
