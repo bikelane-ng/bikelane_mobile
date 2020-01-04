@@ -4,6 +4,7 @@ import {
     Image,
     TouchableOpacity,
 } from 'react-native';
+import store from '../store/createStore';
 import { createAppContainer } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
 import { createDrawerNavigator, DrawerNavigatorItems } from "react-navigation-drawer";
@@ -41,16 +42,16 @@ import AdminDriverDetailScreen from '../screens/Admin/DriverDetails';
 import AsyncStorage from '@react-native-community/async-storage';
 import NavigationService from './NavigationService';
 
-let avatar = undefined,
-    fullName = undefined;
-if (!avatar || !fullName) {
-    AsyncStorage.getItem(constants.CURRENT_USER).then((user) => {
-        if (user) {
-            avatar = JSON.parse(user).avatar;
-            fullName = `${JSON.parse(user).firstName} ${JSON.parse(user).surname}`
-        }
-    })
-}
+// let avatar = undefined,
+//     fullName = undefined;
+// if (!avatar || !fullName) {
+//     AsyncStorage.getItem(constants.CURRENT_USER).then((user) => {
+//         if (user) {
+//             avatar = JSON.parse(user).avatar;
+//             fullName = `${JSON.parse(user).firstName} ${JSON.parse(user).surname}`
+//         }
+//     })
+// }
 
 function logOut() {
     setTimeout(() => {
@@ -59,12 +60,13 @@ function logOut() {
     }, 0);
 }
 
-const drawerContentComponents = (props) => (
-    <Container>
+const drawerContentComponents = (props) => {
+    return(
+        <Container>
         <Header style={{ height: 200, backgroundColor: colors.white, }}>
             <Body style={{ flexDirection: 'row', paddingLeft: 20, }}>
-                <Thumbnail source={{ uri: avatar && avatar }} />
-                <Text style={{ fontFamily: fonts.medium, paddingLeft: 20, fontSize: 16, marginTop: 15, }}>{fullName && fullName}</Text>
+                <Thumbnail source={{ uri: store.getState().user.current.avatar }} />
+                <Text style={{ fontFamily: fonts.medium, paddingLeft: 20, fontSize: 16, marginTop: 15, }}>{`${store.getState().user.current.firstName} ${store.getState().user.current.surname}`}</Text>
             </Body>
         </Header>
         <View style={{ justifyContent: 'flex-end', borderBottomWidth: 2.5, borderBottomColor: colors.default, opacity: 0.3, }}></View>
@@ -85,7 +87,8 @@ const drawerContentComponents = (props) => (
             <Image source={require('../imgs/Bikelane.png')} />
         </View>
     </Container>
-);
+    )
+}
 
 const MyDrawerNavigator = createDrawerNavigator({
     'Home': {
