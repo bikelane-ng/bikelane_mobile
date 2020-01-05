@@ -35,7 +35,9 @@ const SearchResult = ({
             key,
             value: val
         });
-        getAddressPredictions();
+        setTimeout(() => {
+            getAddressPredictions();
+        }, 1000);
     }
     _keyExtractor = (item, index) => item.name;
     return (
@@ -85,9 +87,10 @@ const SearchResult = ({
 
                                         // value={selectedAddress && selectedAddress["pickUp"] && selectedAddress.pickUp.name.length > truncateLength ? `${selectedAddress.pickUp.name.substring(0, truncateLength)}...` : selectedAddress.pickUp && selectedAddress.pickUp.name.length < truncateLength ? selectedAddress.pickUp.name : ""}
                                         />
-                                        {inputData && inputData['pickUp'] && inputData['pickUp'].length > 0 && <TouchableOpacity onPress={() => clearInputData('pickUp')}>
+                                        {inputData && inputData['pickUp'] && inputData['pickUp'].length > 0 && !searching && <TouchableOpacity onPress={() => clearInputData('pickUp')}>
                                             <Icon style={{ color: colors.gray, fontSize: 30, marginRight: 5, }} type='Ionicons' name='ios-close' />
                                         </TouchableOpacity>}
+                                        {inputData && inputData['pickUp'] && resultTypes === 'pickUp' && searching && <Spinner style={{ marginRight: 7 }} size='small' color={colors.default} />}
                                     </Item>
                                 </View>
 
@@ -101,9 +104,10 @@ const SearchResult = ({
                                             autoFocus={false}
                                             value={inputData && inputData["dropOff"] && inputData.dropOff}
                                         />
-                                        {inputData && inputData['dropOff'] && inputData['dropOff'].length > 0 && <TouchableOpacity onPress={() => clearInputData('dropOff')}>
+                                        {inputData && inputData['dropOff'] && inputData['dropOff'].length > 0 && !searching && <TouchableOpacity onPress={() => clearInputData('dropOff')}>
                                             <Icon style={{ color: colors.gray, fontSize: 30, marginRight: 5, }} type='Ionicons' name='ios-close' />
                                         </TouchableOpacity>}
+                                        {inputData && inputData['dropOff'] && resultTypes === 'dropOff' && searching && <Spinner style={{ marginRight: 7 }} size='small' color={colors.default} />}
                                     </Item>
                                 </View>
                             </View>
@@ -114,17 +118,17 @@ const SearchResult = ({
 
 
             <View style={{ flex: 1 }}>
-                {searching && <View style={{ marginTop: 30, alignItems: "center" }}>
+                {/* {searching && <View style={{ marginTop: 30, alignItems: "center" }}>
                     <Spinner size='small' />
                     <Text>Please wait...</Text>
-                </View>}
+                </View>} */}
 
                 {error && !searching && <View style={{ width: "90%", marginTop: 30, alignItems: "center", padding: 20, flexDirection: "row" }}>
                     <Icon type='Ionicons' name='ios-information-circle-outline' />
                     <Text style={{ paddingLeft: 20 }}>{error}</Text>
                 </View>}
 
-                <View style={styles.searchResultsWrapper}>
+                {!selectedAddress['pickUp'] || !selectedAddress['dropOff'] && <View style={styles.searchResultsWrapper}>
                     <List
                         dataArray={predictions && predictions}
                         keyExtractor={(item, index) => index.toString()}
@@ -133,9 +137,9 @@ const SearchResult = ({
                                 activeOpacity={0.7}
                                 onPress={() => handleSelectedAddress(item.placeID)}
                                 style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#ffffff', marginTop: 2, padding: 20, }}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
                                     <Icon style={{ fontSize: 20, color: colors.default }} name='ios-pin' />
-                                    <View style={{ paddingLeft: 30, paddingRight: 10 }}>
+                                    <View style={{ paddingLeft: 0, paddingRight: 10, width: '90%', }}>
                                         <Text style={styles.primaryText}>{item.primaryText}</Text>
                                         <Text style={styles.secondaryText}>{item.secondaryText}</Text>
                                     </View>
@@ -146,7 +150,7 @@ const SearchResult = ({
                             </TouchableOpacity>
                         }
                     />
-                </View>
+                </View>}
                 {!inputData['pickUp'] && !inputData['dropOff'] ? <PlacesComponent /> : null}
 
                 {selectedAddress && selectedAddress['pickUp'] && selectedAddress['dropOff'] && <View style={{ padding: 30, flex: 1, justifyContent: 'flex-end' }}>

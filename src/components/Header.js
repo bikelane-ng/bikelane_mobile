@@ -15,11 +15,13 @@ export default function ({ hamburger, backAction, wallet, admin, headerColor, ro
         <View>
             <Header style={{ backgroundColor: Platform.OS === 'android' && admin ? colors.bg : Platform.OS === 'android' && !admin ? colors.white || colors.white : null, }}>
                 {role !== 'USER' && <>
-                    {hamburger === false && backAction !== false && <Left style={{ paddingLeft: 15, }}>
+                    {hamburger === false && backAction !== false && <Left style={{ paddingLeft: 0, }}>
                         <TouchableOpacity
                             onPress={() => backAction ? backAction() : NavigationService.goBack()}
                             activeOpacity={0.7}>
-                            <Icon name='arrow-back' />
+                            <View style={{ padding: 20, }}>
+                                <Icon name='arrow-back' />
+                            </View>
                         </TouchableOpacity>
                     </Left>}
                     {hamburger && <Left style={{ paddingLeft: 15, }}>

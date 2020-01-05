@@ -13,7 +13,8 @@ import {
     InputGroup,
     Icon,
     Card,
-    CardItem
+    CardItem,
+    Spinner
 } from "native-base";
 import styles from "./MapSearchStyles";
 import Text from '../../config/AppText';
@@ -29,7 +30,7 @@ const propTypes = {
 }
 
 const truncateLength = 28;
-const MapSearch = ({ toggleSearchModal, getAddressPredictions, getInputData, inputData }) => {
+const MapSearch = ({ toggleSearchModal, getAddressPredictions, getInputData, inputData, addressLoading, }) => {
     function handleSearch(key, val) {
         getInputData({
             key,
@@ -41,7 +42,7 @@ const MapSearch = ({ toggleSearchModal, getAddressPredictions, getInputData, inp
         <View style={styles.searchBox}>
             <View style={{ marginTop: 20, padding: 15 }}>
                 <Card style={[{ padding: 10 }, styles.cardShadow]}>
-                    <View style={{ flexDirection: "row" }}>
+                    {addressLoading ? <Spinner color={colors.default_text} /> : <View style={{ flexDirection: "row" }}>
                         <View style={{ marginTop: 15, padding: 10 }}>
                             <View style={{ width: 12, height: 12, borderRadius: 12 / 2, marginLeft: -1.8, borderWidth: 1, borderColor: "#9C9C9C", alignItems: "center", justifyContent: "center" }}>
                                 <View style={{ height: 6, width: 6, borderRadius: 6 / 2, borderWidth: 1, borderColor: colors.default, backgroundColor: colors.default }}></View>
@@ -87,7 +88,7 @@ const MapSearch = ({ toggleSearchModal, getAddressPredictions, getInputData, inp
                                 </CardItem>
                             </TouchableOpacity>
                         </View>
-                    </View>
+                    </View>}
                 </Card>
             </View>
         </View>

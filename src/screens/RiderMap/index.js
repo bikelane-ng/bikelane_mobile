@@ -89,7 +89,7 @@ class RiderMap extends React.Component {
     componentDidMount() {
         const { navigation } = this.props;
         this.props.getCurrentLocation();
-        this.props.getCurrentAddress();
+        // this.props.getCurrentAddress();
         // socket.emit('serverData', { name: 'Obinna Okoro', role: 'Sofware Dev' })
         // const { coordinate } = this.state;
         // this.requestCameraPermission();
@@ -384,6 +384,7 @@ class RiderMap extends React.Component {
                             getAddressPredictions={this.props.getAddressPredictions}
                             getInputData={this.props.getInputData}
                             inputData={this.props.home.inputData}
+                            addressLoading={this.props.home.addressLoading}
                         />}
                     {this.props.home.requestRide && <RequestRide
                         // response={this.props.home.requestedRide}

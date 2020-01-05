@@ -7,7 +7,6 @@
  */
 
 import React, { Fragment } from 'react';
-
 import AppNavigator from './src/navigation';
 import store from './src/store/createStore';
 import { Provider } from 'react-redux';

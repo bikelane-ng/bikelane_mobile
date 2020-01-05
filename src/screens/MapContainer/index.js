@@ -200,6 +200,7 @@ const MapContainer = ({ region, coordinate, selectedAddress, mapRef, nearbyDrive
                 followUserLocation={true}
                 showsCompass={true}
                 zoomEnabled={true}
+                loadingEnabled={true}
                 // customMapStyle={customStyle}
                 // onRegionChangeComplete={onRegionChange}
                 // loadingEnabled
@@ -220,22 +221,19 @@ const MapContainer = ({ region, coordinate, selectedAddress, mapRef, nearbyDrive
                         /> : null
                 }
 
-                {pickUp &&
+                {pickUp && dropOff && <>
                     <MapView.Marker
                         coordinate={pickUp.location}
                         // image={pickUpMarker}
                         pinColor={colors.default}
                         title={pickUp.name}
                     />
-                }
-
-                {dropOff &&
                     <MapView.Marker
                         coordinate={dropOff.location}
                         pinColor="blue"
                         title={dropOff.name}
                     />
-                }
+                </>}
 
                 {nearbyDrivers &&
                     nearbyDrivers.map((marker, i) => {

@@ -73,8 +73,13 @@ export default function homeReducer(state = initialState, action) {
                 error: action.payload,
                 predictions: undefined
             })
-        case constants.GET_CURRENT_ADDRESS:
+            case constants.GET_CURRENT_ADDRESS:
             return Object.assign({}, state, {
+                addressLoading: true,
+            })
+        case constants.GET_CURRENT_ADDRESS_SUCCESS:
+            return Object.assign({}, state, {
+                addressLoading: undefined,
                 resultTypes: 'pickUp',
                 inputData: {
                     pickUp: action.payload.name,
@@ -86,7 +91,7 @@ export default function homeReducer(state = initialState, action) {
         case constants.GET_SELECTED_ADDRESS:
             return Object.assign({}, state, {
                 // toggle: false,
-                predictions: {},
+                // predictions: {},
                 inputData: {
                     pickUp: state.resultTypes == 'pickUp' ? action.payload.name : state.inputData.pickUp,
                     dropOff: state.resultTypes == 'dropOff' ? action.payload.name : state.inputData.dropOff

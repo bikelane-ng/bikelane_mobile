@@ -20,6 +20,7 @@ Geocoder.init(API_KEY); // use a valid API key
 const {
     GET_CURRENT_LOCATION,
     GET_CURRENT_ADDRESS,
+    GET_CURRENT_ADDRESS_SUCCESS,
     GET_INPUT,
     TOGGLE_SEARCH_RESULT,
     UNTOGGLE_SEARCH_RESULT,
@@ -69,6 +70,37 @@ export function getCurrentLocation() {
                     type: GET_CURRENT_LOCATION,
                     payload: position
                 });
+                Axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&key=${API_KEY}`)
+                .then((response) => {
+                    console.log('fff')
+                    console.log(response)
+                    const result = response.data.results[0];
+                    // let name = result.address_components.map((e) => {
+                    //     return e["types"];
+                    // })
+                    const data = {
+                        priceLevel: 0,
+                        viewport: {
+                            longitudeSW: result.geometry.viewport.southwest.lng,
+                            latitudeSW: result.geometry.viewport.southwest.lat,
+                            longitudeNE: result.geometry.viewport.northeast.lng,
+                            latitudeNE: result.geometry.viewport.northeast.lat
+                        },
+                        address: result.formatted_address,
+                        location: {
+                            longitude: result.geometry.location.lng,
+                            latitude: result.geometry.location.lat
+                        },
+                        plusCode: result.plus_code,
+                        types: result.types,
+                        placeID: result.place_id,
+                        name: result.formatted_address.split(',')[0]
+                    }
+                    dispatch({
+                        type: GET_CURRENT_ADDRESS_SUCCESS,
+                        payload: data
+                    });
+                })
             },
             (error) => console.log(error.message),
             { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
@@ -76,15 +108,54 @@ export function getCurrentLocation() {
     }
 }
 
+// export function getCurrentAddress() {
+//     return (dispatch) => {
+//         dispatch({
+//             type: GET_CURRENT_ADDRESS,
+//         });
+//         Axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&key=${API_KEY}`)
+//             .then((response) => {
+//                 console.log('fff')
+//                 console.log(response)
+//                 const result = response[0];
+//                 const data = {
+//                     priceLevel: 0,
+//                     viewport: {
+//                         longitudeSW: result.geometry.viewport.southwest.lng,
+//                         latitudeSW: result.geometry.viewport.southwest.lat,
+//                         longitudeNE: result.geometry.viewport.northeast.lng,
+//                         latitudeNE: result.geometry.viewport.northeast.lat
+//                     },
+//                     address: result.formatted_address,
+//                     location: {
+//                         longitude: result.geometry.location.lng,
+//                         latitude: result.geometry.location.lat
+//                     },
+//                     plusCode: result.plus_code,
+//                     types: result.types,
+//                     placeID: result.place_id,
+//                     name: result.formatted_address
+//                 }
+//                 dispatch({
+//                     type: GET_CURRENT_ADDRESS_SUCCESS,
+//                     payload: data
+//                 });
+//             })
+//     }
+// }
+
 export function getCurrentAddress() {
     return (dispatch) => {
+        dispatch({
+            type: GET_CURRENT_ADDRESS,
+        });
         RNGooglePlaces.getCurrentPlace()
             .then((results) => {
                 console.log(results)
                 results.reduce(function (prev, current) {
                     if ((prev.likelihood > current.likelihood)) {
                         dispatch({
-                            type: GET_CURRENT_ADDRESS,
+                            type: GET_CURRENT_ADDRESS_SUCCESS,
                             payload: prev,
                         });
                     }
