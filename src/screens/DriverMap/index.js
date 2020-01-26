@@ -6,7 +6,8 @@ import {
     View,
     TouchableOpacity,
     PermissionsAndroid,
-    Dimensions
+    Dimensions,
+    StyleSheet,
 } from "react-native";
 import MapView, {
     Marker,
@@ -17,22 +18,21 @@ import MapView, {
 import Geolocation from '@react-native-community/geolocation';
 import haversine from "haversine";
 import {
-    Icon
+    Icon, Spinner, Card
 } from "native-base";
 import MapContainer from "../MapContainer";
-import MapSearch from "../MapSearch";
-import SearchResult from "../SearchResults";
-import BookingDetails from '../BookingDetails';
-import DriverDetails from "../DriverDetails";
-import { Menu } from "../assets/Components";
-import RequestRide from "../RequestRide";
 import Header from "../../components/Header";
+import { colors, rideStatus, fonts, } from "../../constants/DefaultProps";
+import RideDetails from "../RideDetails";
+import ArrivedLocation from "../ArrivedLocation";
+import StartRide from '../StartRide';
+import CompleteRide from '../CompleteRide';
+import ConfirmPayment from '../ConfirmPayment';
 import Button from '../../components/Button';
-import { colors } from "../../constants/DefaultProps";
-// import io from 'socket.io-client';
-// const socket = io('http://localhost:8085', {
-//     transports: ['websocket']
-// });
+import { Acceptance, RatingIcon, Cancellation } from "../Admin/assets";
+import Text from '../../config/AppText';
+
+var width = Dimensions.get("window").width; //full width
 
 const homePlace = { description: 'Home', geometry: { location: { lat: 48.8152937, lng: 2.4597668 } } };
 const workPlace = { description: 'Work', geometry: { location: { lat: 48.8496818, lng: 2.2940881 } } };
@@ -56,16 +56,19 @@ class DriverMap extends React.Component {
             mapRef: {},
             selected: false,
             hasAddress: false,
+            prevCordinates: undefined,
             region: {
                 latitude: 0,
                 longitude: 0,
                 latitudeDelta: LATITUDE_DELTA,
                 longitudeDelta: LONGITUDE_DELTA
             },
+            rideDetails: undefined,
             nearestDriver: {},
             nearbyDrivers: [],
             routeCoordinates: [],
             distanceTravelled: 0,
+            updateStatus: false,
             prevLatLng: {},
             coordinate: new AnimatedRegion({
                 latitude: this.props.home.location.coords.latitude || 0,
@@ -79,6 +82,34 @@ class DriverMap extends React.Component {
         this.fitMarkers = this.fitMarkers.bind(this);
         this.toggleDrawer = this.toggleDrawer.bind(this);
         this.onRegionChange = this.onRegionChange.bind(this);
+        this.props.socket.on('RideBooked.push', (rideDetails) => {
+            // alert('Ride Alert!!!');
+            this.setState({ rideDetails, }, () => {
+                var Sound = require('react-native-sound');
+
+                // Enable playback in silence mode
+                Sound.setCategory('Playback');
+
+                var whoosh = new Sound('ride_alert.mp3', Sound.MAIN_BUNDLE, (error) => {
+                    if (error) {
+                        console.log('failed to load the sound', error);
+                        return;
+                    }
+                    // loaded successfully
+                    console.log('duration in seconds: ' + whoosh.getDuration() + 'number of channels: ' + whoosh.getNumberOfChannels());
+
+                    // Play the sound with an onEnd callback
+                    whoosh.play((success) => {
+                        if (success) {
+                            console.log('successfully finished playing');
+                        } else {
+                            console.log('playback failed due to audio decoding errors');
+                        }
+                    });
+                });
+            });
+            // console.log(data);
+        });
     }
 
     // static navigationOptions = {
@@ -93,46 +124,52 @@ class DriverMap extends React.Component {
         // socket.emit('serverData', { name: 'Obinna Okoro', role: 'Sofware Dev' })
         // const { coordinate } = this.state;
         // this.requestCameraPermission();
+        this.watchPosition();
+    }
 
-        // this.watchID = Geolocation.watchPosition(
-        //     position => {
-        //         const { routeCoordinates, distanceTravelled } = this.state;
-        //         const { latitude, longitude } = position.coords;
+    watchPosition = () => {
+        this.watchID = Geolocation.watchPosition(
+            position => {
+                const { routeCoordinates, distanceTravelled, coordinate, } = this.state;
+                const { latitude, longitude } = position.coords;
 
-        //         const newCoordinate = {
-        //             latitude,
-        //             longitude
-        //         };
-        //         console.log({ newCoordinate });
+                const newCoordinate = {
+                    latitude,
+                    longitude
+                };
+                console.log({ newCoordinate });
 
-        //         if (Platform.OS === "android") {
-        //             if (this.marker) {
-        //                 this.marker._component.animateMarkerToCoordinate(
-        //                     newCoordinate,
-        //                     500
-        //                 );
-        //             }
-        //         } else {
-        //             coordinate.timing(newCoordinate).start();
-        //         }
+                if (Platform.OS === "android") {
+                    if (this.marker) {
+                        this.marker._component.animateMarkerToCoordinate(
+                            newCoordinate,
+                            500
+                        );
+                    }
+                } else {
+                    coordinate.timing(newCoordinate).start();
+                }
 
-        //         this.setState({
-        //             latitude,
-        //             longitude,
-        //             routeCoordinates: routeCoordinates.concat([newCoordinate]),
-        //             distanceTravelled:
-        //                 distanceTravelled + this.calcDistance(newCoordinate),
-        //             prevLatLng: newCoordinate
-        //         });
-        //     },
-        //     error => console.log(error),
-        //     {
-        //         enableHighAccuracy: true,
-        //         timeout: 20000,
-        //         maximumAge: 1000,
-        //         distanceFilter: 10
-        //     }
-        // );
+                this.setState({
+                    prevCordinates: {
+                        latitude,
+                        longitude,
+                    }
+                });
+                this.props.socket.emit('DriverLocation', {
+                    longitude,
+                    latitude,
+                    driverId: this.props.current._id
+                })
+            },
+            error => console.log(error),
+            {
+                enableHighAccuracy: true,
+                timeout: 20000,
+                maximumAge: 1000,
+                distanceFilter: 10
+            }
+        );
     }
 
     UNSAFE_componentWillReceiveProps(prevProps) {
@@ -164,6 +201,15 @@ class DriverMap extends React.Component {
                 nearbyDrivers: prevProps.home.nearbyDrivers
             })
         }
+        if (prevProps.driver.status && prevProps.driver.status != this.props.driver.status) {
+            this.setState({
+                updateStatus: false
+            })
+            alert('You are currently active')
+        }
+        // if (prevProps.home.isRideStatusUpdated && prevProps.home.isRideStatusUpdated != this.props.home.isRideStatusUpdated) {
+
+        // }
     }
 
     componentWillUnmount() {
@@ -306,19 +352,23 @@ class DriverMap extends React.Component {
         ];
     }
 
-    fitMarkers(pickUp, dropOff) {
+    fitMarkers = () => {
+        const { pickUp, dropOff } = this.props.home.selectedAddress;
         setTimeout(() => {
-            var query = [
-                pickUp,
-                dropOff
-            ]
             console.log(this.map)
             console.log(this.getMarkers())
             // this.map.fitToCoordinates(query, {
             //     edgePadding: DEFAULT_PADDING,
             //     animated: true,
             // });
-            this.map.fitToCoordinates(this.getMarkers(), {
+            // this.map.fitToCoordinates(this.getMarkers(), {
+            //     edgePadding: DEFAULT_PADDING,
+            //     animated: true,
+            // });
+            this.map.fitToCoordinates([
+                { latitude: pickUp.location.latitude, longitude: pickUp.location.longitude },
+                { latitude: dropOff.location.latitude, longitude: dropOff.location.longitude },
+            ], {
                 edgePadding: DEFAULT_PADDING,
                 animated: true,
             });
@@ -331,6 +381,28 @@ class DriverMap extends React.Component {
         })
     }
 
+    headtToLocation = (rideDetails) => {
+        this.props.updateRideDetails(rideDetails);
+    }
+
+    changeStatus = (status) => {
+        this.props.updateRideStatus({
+            location: this.state.prevCordinates,
+        },
+            this.props.home.rideDetails._id,
+            status
+        );
+    }
+
+    confirmPayment = () => {
+
+    }
+
+    changeDriverStatus = () => {
+        this.setState({ updateStatus: true, });
+        this.props.updateDriverStatus({ active: true }, this.props.current._id);
+    }
+
     toggleDrawer = () => this.props.navigation.toggleDrawer();
 
     render() {
@@ -340,11 +412,12 @@ class DriverMap extends React.Component {
                 <MapContainer
                     region={this.state.region}
                     coordinate={this.state.coordinate}
-                    selectedAddress={this.props.home.selectedAddress}
+                    selectedAddress={undefined}
                     mapRef={this.mapRef}
                     nearbyDrivers={this.state.nearbyDrivers}
                     nearestDriver={this.state.nearestDriver}
                     onRegionChange={this.onRegionChange}
+                    rideDetails={this.props.home.rideDetails}
                     overlay={this.props.home.overlay}
                 />
                 <View style={{ position: 'absolute', zIndex: 1000, elevation: 5, width: '100%', }}>
@@ -357,23 +430,147 @@ class DriverMap extends React.Component {
                     />
                 </View>
 
-                <View style={{ position: 'absolute', zIndex: 1000, elevation: 5, bottom: 50, alignItems: 'center', width: '100%', }}>
-                    <Button
-                        // onPress={() => this.props.navigation.navigate('VehicleInfo')}
-                        BtnText={"Stop"}
-                        loading={this.state.isProccessing}
-                        style={{ width: '80%', }}
-                        BtnTextStyles={{ color: '#ffffff' }}
-                    />
-                </View>
+                {this.state.rideDetails && !this.props.home.hideAlert && <RideDetails
+                    rideDetails={this.state.rideDetails}
+                    headtToLocation={this.headtToLocation}
+                />}
+
+                {this.props.home.showCard && <View style={styles.searchBox}>
+                    <View style={{ marginTop: 20, padding: 15 }}>
+                        <Card style={[{ paddingBottom: 10, }, styles.cardShadow]}>
+                            {this.props.home.processing ? <Spinner color={colors.default_text} /> : <>
+                                {this.props.home.arrive && <ArrivedLocation
+                                    rideDetails={this.props.home.rideDetails}
+                                    arrived={() => this.changeStatus(rideStatus.ARRIVED)}
+                                    isRideStatusUpdated={this.props.home.isRideStatusUpdated}
+                                    error={this.props.home.updateRideError}
+                                />}
+
+                                {this.props.home.status == rideStatus.ARRIVED && <StartRide
+                                    rideDetails={this.props.home.rideDetails}
+                                    start={() => this.changeStatus(rideStatus.ONGOING)}
+                                />}
+
+                                {this.props.home.status == rideStatus.ONGOING && <CompleteRide
+                                    rideDetails={this.props.home.rideDetails}
+                                    complete={() => this.changeStatus(rideStatus.COMPLETED)}
+                                />}
+
+                                {this.props.home.status == rideStatus.COMPLETED && <ConfirmPayment
+                                    rideDetails={this.props.home.rideDetails}
+                                    confirmPayment={this.confirmPayment}
+                                />}
+                            </>}
+                        </Card>
+                    </View>
+                </View>}
+
+
+                {!this.state.rideDetails && <View style={styles.searchBox}>
+                    <View style={{ marginTop: 20, padding: 15 }}>
+                        <Card style={[{ paddingBottom: 10, }, styles.cardShadow]}>
+                            <View style={{ backgroundColor: colors.white, padding: 10, paddingVertical: 20, marginTop: 5, }}>
+                                <View style={{ marginTop: 10, flexDirection: 'row', justifyContent: 'space-around', }}>
+                                    <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+                                        <Acceptance />
+                                        <Text style={{ paddingVertical: 5, fontFamily: fonts.medium, }}>95.0%</Text>
+                                        <Text style={{ color: colors.gray }}>Acceptance</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+                                        <RatingIcon />
+                                        <Text style={{ paddingVertical: 5, fontFamily: fonts.medium, }}>4.75</Text>
+                                        <Text style={{ color: colors.gray }}>Rating</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+                                        <Cancellation />
+                                        <Text style={{ paddingVertical: 5, fontFamily: fonts.medium, }}>2.0%</Text>
+                                        <Text style={{ color: colors.gray }}>Cancellation</Text>
+                                    </View>
+                                </View>
+                            </View>
+                            <View style={{ alignItems: 'center', marginVertical: 15, }}>
+                                <Button
+                                    onPress={this.changeDriverStatus}
+                                    BtnText={"Go"}
+                                    loading={this.state.updateStatus}
+                                    style={{ width: '85%', }}
+                                    BtnTextStyles={{ color: '#ffffff' }}
+                                />
+                            </View>
+                        </Card>
+                    </View>
+                    {/* <View style={{ alignItems: 'center' }}>
+                        <Button
+                            onPress={this.changeDriverStatus}
+                            BtnText={"Stop"}
+                            loading={this.state.isProccessing}
+                            style={{ width: '80%', }}
+                            BtnTextStyles={{ color: '#ffffff' }}
+                        />
+                    </View> */}
+                </View>}
             </View>
         );
     }
 }
 
+const styles = StyleSheet.create({
+    searchBox: {
+        bottom: 50,
+        position: "absolute",
+        width: width
+    },
+    searchBar: {
+        flex: 1,
+        flexDirection: 'column',
+        position: 'absolute',
+        zIndex: 999,
+        left: 15,
+        height: 40,
+    },
+    searchInput: {
+        flex: 1,
+        backgroundColor: 'white',
+        borderWidth: 1,
+        padding: 20,
+        opacity: .9,
+    },
+    cardShadow: {
+        borderWidth: 1,
+        borderRadius: 12,
+        borderColor: '#ddd',
+        borderBottomWidth: 0,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.2,
+        // shadowRadius: 2,
+        elevation: 5,
+        marginLeft: 5,
+        marginRight: 5,
+        marginTop: 10,
+    },
+    inputShadow: {
+        borderWidth: 1,
+        borderRadius: 2,
+        borderColor: '#ddd',
+        borderBottomWidth: 0,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        elevation: 1.2,
+        marginLeft: 5,
+        marginRight: 5,
+        marginTop: 10,
+    },
+})
+
 const mapStateToProps = state => ({
     home: state.home,
     avatar: state.user.current.avatar,
+    socket: state.socket,
+    current: state.user.current,
+    driver: state.driver,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators(actionCreators, dispatch);

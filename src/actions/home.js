@@ -16,6 +16,7 @@ import haversine from "haversine";
 import { API_KEY } from "../constants/DefaultProps";
 import config from "../config";
 Geocoder.init(API_KEY); // use a valid API key
+import store from '../store/createStore';
 
 const {
     GET_CURRENT_LOCATION,
@@ -47,6 +48,7 @@ const {
     ESITMATE_RIDE_DETAILS,
     ESITMATE_RIDE_DETAILS_SUCCESS,
     ESITMATE_RIDE_DETAILS_FAILURE,
+    UPDATE_RIDE_DETAILS,
 } = constants;
 
 const { width, height } = Dimensions.get("window");
@@ -70,37 +72,43 @@ export function getCurrentLocation() {
                     type: GET_CURRENT_LOCATION,
                     payload: position
                 });
-                Axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&key=${API_KEY}`)
-                .then((response) => {
-                    console.log('fff')
-                    console.log(response)
-                    const result = response.data.results[0];
-                    // let name = result.address_components.map((e) => {
-                    //     return e["types"];
-                    // })
-                    const data = {
-                        priceLevel: 0,
-                        viewport: {
-                            longitudeSW: result.geometry.viewport.southwest.lng,
-                            latitudeSW: result.geometry.viewport.southwest.lat,
-                            longitudeNE: result.geometry.viewport.northeast.lng,
-                            latitudeNE: result.geometry.viewport.northeast.lat
-                        },
-                        address: result.formatted_address,
-                        location: {
-                            longitude: result.geometry.location.lng,
-                            latitude: result.geometry.location.lat
-                        },
-                        plusCode: result.plus_code,
-                        types: result.types,
-                        placeID: result.place_id,
-                        name: result.formatted_address.split(',')[0]
-                    }
+                setTimeout(() => {
                     dispatch({
-                        type: GET_CURRENT_ADDRESS_SUCCESS,
-                        payload: data
+                        type: GET_CURRENT_ADDRESS,
                     });
-                })
+                    Axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&key=${API_KEY}`)
+                        .then((response) => {
+                            console.log('fff')
+                            console.log(response)
+                            const result = response.data.results[0];
+                            // let name = result.address_components.map((e) => {
+                            //     return e["types"];
+                            // })
+                            const data = {
+                                priceLevel: 0,
+                                viewport: {
+                                    longitudeSW: result.geometry.viewport.southwest.lng,
+                                    latitudeSW: result.geometry.viewport.southwest.lat,
+                                    longitudeNE: result.geometry.viewport.northeast.lng,
+                                    latitudeNE: result.geometry.viewport.northeast.lat
+                                },
+                                address: result.formatted_address,
+                                location: {
+                                    longitude: result.geometry.location.lng,
+                                    latitude: result.geometry.location.lat
+                                },
+                                plusCode: result.plus_code,
+                                types: result.types,
+                                placeID: result.place_id,
+                                name: result.formatted_address,
+                            }
+                            dispatch({
+                                type: GET_CURRENT_ADDRESS_SUCCESS,
+                                payload: data
+                            });
+                        })
+                        .catch((err) => console.log(err))
+                }, 0);
             },
             (error) => console.log(error.message),
             { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
@@ -481,6 +489,102 @@ export const requestRide = details => (console.log(details), {
         ],
         options: { timeout: 10000 },
         body: JSON.stringify(details),
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+        },
+        credentials: "same-origin"
+    }
+});
+
+// export function updateRideDetails(riderDetails) {
+//     return (dispatch) => {
+//         dispatch({
+//             type: UPDATE_RIDE_DETAILS,
+//             payload: riderDetails,
+//         })
+//     }
+// }
+
+export const updateRideStatus = (location, rideId, status) => ({
+    [RSAA]: {
+        endpoint: `${config.api.host}/api/ride/status/${rideId}?status=${status}`,
+        method: 'PUT',
+        types: [
+            constants.UPDATE_RIDE_STATUS,
+            {
+                type: constants.UPDATE_RIDE_STATUS_SUCCESS,
+                payload: (action, state, response) => response.json().then(response => {
+                    store.getState().socket.emit('RideStatus', {
+                        status: status,  //or ONGOING, COMPLETED, CANCELLED
+                        location: location,
+                    })
+                    return {
+                        response,
+                        status,
+                    }
+                })
+            },
+            {
+                type: constants.UPDATE_RIDE_STATUS_FAILURE,
+                meta: (action, state, res) => {
+                    return {
+                        status: res,
+                    }
+                }
+            }
+        ],
+        options: { timeout: 10000 },
+        body: JSON.stringify(location),
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+        },
+        credentials: "same-origin"
+    }
+});
+
+export function rideStatus(status) {
+    return (dispatch) => {
+        dispatch({
+            type: constants.UPDATE_RIDE_STATUS_SUCCESS,
+            payload: { status, },
+        })
+    }
+}
+
+export function updateRideDetails(riderDetails) {
+    return (dispatch) => {
+        dispatch({
+            type: UPDATE_RIDE_DETAILS,
+            payload: riderDetails,
+        })
+    }
+}
+
+export const completeTransaction = (data) => ({
+    [RSAA]: {
+        endpoint: `${config.api.host}/api/transaction`,
+        method: 'POST',
+        types: [
+            constants.COMPLETE_TRANSACTION,
+            {
+                type: constants.COMPLETE_TRANSACTION_SUCCESS,
+                payload: (action, state, response) => response.json().then(response => ({
+                    response,
+                }))
+            },
+            {
+                type: constants.COMPLETE_TRANSACTION_FAILURE,
+                meta: (action, state, res) => {
+                    return {
+                        status: res,
+                    }
+                }
+            }
+        ],
+        options: { timeout: 10000 },
+        body: JSON.stringify(data),
         headers: {
             Accept: "application/json",
             "Content-Type": "application/json"

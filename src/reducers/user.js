@@ -5,7 +5,7 @@ export default function userReducer(state = {}, action) {
     switch (action.type) {
         case constants.INIT_SUCCESS:
             return Object.assign({}, state, {
-                current: action.payload,
+                current: action.payload.response && action.payload.response.data,
                 loggedIn: true,
             })
         case constants.AUTH_USER:

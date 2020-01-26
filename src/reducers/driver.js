@@ -90,6 +90,24 @@ export default function driverReducer(state = initialState, action) {
             return Object.assign({}, state, {
                 error: 'An error occured while processing your request'
             })
+        case constants.UPDATE_DRIVER_STATUS:
+            return {
+                ...state,
+                status: undefined,
+            }
+
+        case constants.UPDATE_DRIVER_STATUS_SUCCESS:
+            return {
+                ...state,
+                status: action.payload.response,
+            }
+
+        case constants.UPDATE_DRIVER_STATUS_FAILURE:
+            return {
+                ...state,
+                status: undefined,
+                updateDriverError: `${action.payload.name} - ${action.payload.message}`,
+            }
         default:
             return state;
     }

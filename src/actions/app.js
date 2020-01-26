@@ -6,23 +6,57 @@ import {
 import AsyncStorage from '@react-native-community/async-storage';
 import config from '../config';
 
-export const initializeApp = () => {
-    return async (dispatch) => {
-        return AsyncStorage.getItem(constants.TOKEN)
-            .then((token) => {
-                if (!token) return dispatch({
-                    type: constants.INITIALIZATION_FAILURE
+// export const initializeApp = () => {
+//     return async (dispatch) => {
+//         return AsyncStorage.getItem(constants.TOKEN)
+//             .then((token) => {
+//                 if (!token) return dispatch({
+//                     type: constants.INITIALIZATION_FAILURE
+//                 })
+//                 AsyncStorage.getItem(constants.CURRENT_USER)
+//                     .then((user) => {
+//                         return dispatch({
+//                             type: constants.INIT_SUCCESS,
+//                             payload: JSON.parse(user)
+//                         })
+//                     })
+//             })
+//     }
+// }
+
+export const initializeApp = (token) => ({
+    [RSAA]: {
+        endpoint: `${config.api.host}/token/verify`,
+        method: 'POST',
+        types: [
+            constants.INITIALIZE_APP,
+            {
+                type: constants.INIT_SUCCESS,
+                payload: (action, state, response) => response.json().then(response => {
+                    return {
+                        response
+                    }
                 })
-                AsyncStorage.getItem(constants.CURRENT_USER)
-                    .then((user) => {
-                        return dispatch({
-                            type: constants.INIT_SUCCESS,
-                            payload: JSON.parse(user)
-                        })
-                    })
-            })
+            },
+            {
+                type: constants.INITIALIZATION_FAILURE,
+                meta: (action, state, res) => {
+                    return {
+                        status: res.status,
+                        message: res.message
+                    };
+                }
+            }
+        ],
+        body: JSON.stringify(token),
+        options: { timeout: 60000 },
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+        },
+        credentials: "same-origin"
     }
-}
+})
 
 export function inputNumber(number) {
     return (dispatch) => {

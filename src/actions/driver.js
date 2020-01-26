@@ -227,3 +227,36 @@ export const fetchDriver = id => ({
         credentials: "same-origin"
     }
 });
+
+export const updateDriverStatus = (status, driverId) => ({
+    [RSAA]: {
+        endpoint: `${config.api.host}/api/driver/status/${driverId}`,
+        method: 'PUT',
+        types: [
+            constants.UPDATE_DRIVER_STATUS,
+            {
+                type: constants.UPDATE_DRIVER_STATUS_SUCCESS,
+                payload: (action, state, response) => response.json().then(response => {
+                    return {
+                        response,
+                    }
+                })
+            },
+            {
+                type: constants.UPDATE_DRIVER_STATUS_FAILURE,
+                meta: (action, state, res) => {
+                    return {
+                        status: res,
+                    }
+                }
+            }
+        ],
+        options: { timeout: 10000 },
+        body: JSON.stringify(status),
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+        },
+        credentials: "same-origin"
+    }
+});

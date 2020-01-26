@@ -16,6 +16,7 @@ export const colors = {
     bg: '#EBEBEB',
     gray: '#707070',
     default_text: '#9703FC',
+    btnDisabled: "#828282",
 }
 //bg-F5FCFF
 
@@ -30,6 +31,13 @@ export const toastType = {
     danger,
     info,
     warning,
+}
+
+export const rideStatus = {
+    ARRIVED: 'DRIVER_ARRIVED',
+    ONGOING: 'ONGOING',
+    COMPLETED: 'COMPLETED',
+    CANCELLED: 'CANCELLED',
 }
 
 export const API_KEY = "AIzaSyBHdDa33QVmJlDXAV4CC9MBts4f-W3T-EQ";

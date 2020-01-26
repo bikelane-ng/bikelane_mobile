@@ -23,7 +23,11 @@ class InitializeApp extends React.Component {
     }
 
     componentDidMount() {
-        this.props.initApp();
+        AsyncStorage.getItem(constants.TOKEN)
+            .then((token) => {
+                if (!token) this.props.navigation.navigate('Auth');
+                this.props.initApp({ token });
+            })
     }
 
     UNSAFE_componentWillReceiveProps(nextProps) {

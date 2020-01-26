@@ -4,11 +4,12 @@ export default function appReducer(state = {}, action) {
     switch (action.type) {
         case constants.INITIALIZE_APP:
             return Object.assign({}, state, {
-                hasToken: true
+                hasToken: true,
             })
         case constants.INITIALIZATION_FAILURE:
             return Object.assign({}, state, {
-                init_failed: true
+                init_failed: true,
+                error: action.payload.response && action.payload.response.error,
             })
         case constants.INPUT_NUMBER:
             return {

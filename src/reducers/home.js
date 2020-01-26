@@ -7,6 +7,7 @@ const initialState = {
     },
     inputData: {},
     selectedAddress: {},
+    toggle: null,
     mapRef: undefined,
 }
 export default function homeReducer(state = initialState, action) {
@@ -73,25 +74,29 @@ export default function homeReducer(state = initialState, action) {
                 error: action.payload,
                 predictions: undefined
             })
-            case constants.GET_CURRENT_ADDRESS:
+        case constants.GET_CURRENT_ADDRESS:
             return Object.assign({}, state, {
-                addressLoading: true,
+                // addressLoading: true,
+                currentAddress: undefined,
             })
         case constants.GET_CURRENT_ADDRESS_SUCCESS:
             return Object.assign({}, state, {
-                addressLoading: undefined,
+                // addressLoading: undefined,
+                currentAddress: true,
                 resultTypes: 'pickUp',
                 inputData: {
                     pickUp: action.payload.name,
+                    dropOff: state.inputData.dropOff || undefined
                 },
                 selectedAddress: {
                     pickUp: action.payload,
+                    dropOff: state.selectedAddress.dropOff || undefined,
                 }
             })
         case constants.GET_SELECTED_ADDRESS:
             return Object.assign({}, state, {
                 // toggle: false,
-                // predictions: {},
+                predictions: undefined,
                 inputData: {
                     pickUp: state.resultTypes == 'pickUp' ? action.payload.name : state.inputData.pickUp,
                     dropOff: state.resultTypes == 'dropOff' ? action.payload.name : state.inputData.dropOff
@@ -146,6 +151,8 @@ export default function homeReducer(state = initialState, action) {
         case constants.CANCEL_RIDE:
             return Object.assign({}, state, {
                 requestRide: false,
+                rideDetails: undefined,
+                confirmedLocations: undefined,
                 overlay: false,
                 toggle: true,
                 nearestDriver: undefined,
@@ -161,8 +168,10 @@ export default function homeReducer(state = initialState, action) {
             return {
                 ...state,
                 estimate: true,
+                showCard: true,
                 processing: true,
-                toggle: false,
+                confirmedLocations: true,
+                toggle: null,
                 error: undefined,
                 estimatedRideDetails: undefined,
             }
@@ -170,7 +179,7 @@ export default function homeReducer(state = initialState, action) {
             return {
                 ...state,
                 processing: undefined,
-                estimatedRideDetails: action.payload.response,
+                estimatedRideDetails: action.payload.response && action.payload.response.data,
             }
         case constants.ESITMATE_RIDE_DETAILS_FAILURE:
             return {
@@ -179,27 +188,100 @@ export default function homeReducer(state = initialState, action) {
                 error: `${action.payload.name} - ${action.payload.message}`,
             }
 
-            case constants.REQUEST_RIDE:
+        case constants.REQUEST_RIDE:
             return {
                 ...state,
                 estimate: false,
+                showCard: false,
                 requestRide: true,
-                requestedRide: undefined,
-                error: undefined,
+                rideDetails: null,
+                reqRideErr: undefined,
             }
         case constants.REQUEST_RIDE_SUCCESS:
+            if (action.payload.response.error) {
+                return {
+                    ...state,
+                    reqRideErr: action.payload.response.error,
+                }
+            }
+            if (action.payload.response && action.payload.response.data == null) {
+                return {
+                    ...state,
+                    reqRideErr: `Something went wrong. Please try again`,
+                }
+            }
             return {
                 ...state,
-                // processing: undefined,
-                requestedRide: action.payload.response,
+                requestRide: false,
+                showCard: true,
+                rideDetails: action.payload.response && action.payload.response.data,
             }
         case constants.REQUEST_RIDE_FAILURE:
             return {
                 ...state,
                 // processing: undefined,'
                 requestRide: undefined,
+                rideDetails: null,
                 estimate: true,
-                error: `${action.payload.name} - ${action.payload.message}`,
+                reqRideErr: `${action.payload.name} - ${action.payload.message}`,
+            }
+        case constants.UPDATE_RIDE_DETAILS:
+            return {
+                ...state,
+                rideDetails: action.payload,
+                hideAlert: true,
+                arrive: true,
+                showCard: true,
+            }
+
+        case constants.UPDATE_RIDE_STATUS:
+            return {
+                ...state,
+                updateRideError: undefined,
+                arrive: undefined,
+                processing: true,
+                isRideStatusUpdated: false,
+                status: undefined,
+            }
+
+        case constants.UPDATE_RIDE_STATUS_SUCCESS:
+            return {
+                ...state,
+                updateRideError: undefined,
+                processing: false,
+                isRideStatusUpdated: true,
+                hideDriverDetails: true,
+                status: action.payload.status,
+            }
+
+        case constants.UPDATE_RIDE_STATUS_FAILURE:
+            return {
+                ...state,
+                processing: undefined,
+                arrive: true,
+                isRideStatusUpdated: undefined,
+                status: undefined,
+                updateRideError: `${action.payload.name} - ${action.payload.message}`,
+            }
+        case constants.COMPLETE_TRANSACTION:
+            return {
+                ...state,
+                tranx: undefined,
+                tranxErr: undefined,
+            }
+
+        case constants.COMPLETE_TRANSACTION_SUCCESS:
+            return {
+                ...state,
+                tranx: true,
+                tranxErr: undefined,
+            }
+
+        case constants.COMPLETE_TRANSACTION_FAILURE:
+            return {
+                ...state,
+                tranx: undefined,
+                tranxErr: `${action.payload.name} - ${action.payload.message}`,
             }
         default:
             return state;

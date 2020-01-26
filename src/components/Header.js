@@ -15,7 +15,7 @@ export default function ({ hamburger, backAction, wallet, admin, headerColor, ro
         <View>
             <Header style={{ backgroundColor: Platform.OS === 'android' && admin ? colors.bg : Platform.OS === 'android' && !admin ? colors.white || colors.white : null, }}>
                 {role !== 'USER' && <>
-                    {hamburger === false && backAction !== false && <Left style={{ paddingLeft: 0, }}>
+                    {hamburger === false && <Left style={{ paddingLeft: 0, }}>
                         <TouchableOpacity
                             onPress={() => backAction ? backAction() : NavigationService.goBack()}
                             activeOpacity={0.7}>
@@ -52,7 +52,7 @@ export default function ({ hamburger, backAction, wallet, admin, headerColor, ro
                             </TouchableOpacity>
                             <Text style={{ color: colors.black, fontFamily: fonts.medium, }}>N15,000</Text>
                         </View>
-                        <View style={{ backgroundColor: colors.default_text, width: 60, height: 30, alignItems: 'center', justifyContent: 'center', alignSelf: 'center', borderRadius: 10, marginRight: 10, }}>
+                        <View style={{ backgroundColor: colors.default_text, width: 60, height: 30, alignItems: 'center', justifyContent: 'center', alignSelf: 'center', borderRadius: 30, marginRight: 10, }}>
                             <Text style={{ fontFamily: fonts.medium, color: colors.white, }}>Online</Text>
                         </View>
                     </View>

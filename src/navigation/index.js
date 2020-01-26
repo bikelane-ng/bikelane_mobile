@@ -32,6 +32,10 @@ import AddPhotoScreen from '../screens/Admin/Driver/AddPhoto';
 import BankDetailsScreen from '../screens/Admin/Driver/BankDetails';
 import PersonalDocumentScreen from '../screens/Admin/Driver/PersonalDocs';
 import VehicleInfoScreen from '../screens/Admin/Driver/VehicleInfo';
+import SearchResultScreen from '../screens/SearchResults';
+import CardScreen from '../screens/MyCards';
+import AddCardScreen from '../screens/AddCard';
+import AddReviewScreen from '../screens/AddReview';
 
 /**Driver screens starts here */
 import DriverMapScreen from '../screens/DriverMap';
@@ -61,32 +65,32 @@ function logOut() {
 }
 
 const drawerContentComponents = (props) => {
-    return(
+    return (
         <Container>
-        <Header style={{ height: 200, backgroundColor: colors.white, }}>
-            <Body style={{ flexDirection: 'row', paddingLeft: 20, }}>
-                <Thumbnail source={{ uri: store.getState().user.current.avatar }} />
-                <Text style={{ fontFamily: fonts.medium, paddingLeft: 20, fontSize: 16, marginTop: 15, }}>{`${store.getState().user.current.firstName} ${store.getState().user.current.surname}`}</Text>
-            </Body>
-        </Header>
-        <View style={{ justifyContent: 'flex-end', borderBottomWidth: 2.5, borderBottomColor: colors.default, opacity: 0.3, }}></View>
-        <Content style={{ marginTop: -3 }}>
-            <DrawerNavigatorItems labelStyle={{ color: "#707070", paddingLeft: 10, fontFamily: fonts.medium, }} {...props} />
-            <View>
-                <TouchableOpacity
-                    onPress={() => logOut()}
-                    style={{ flexDirection: 'row', justifyContent: 'space-evenly', }}
-                    activeOpacity={0.7}
-                >
-                    <Icon name='ios-power' />
-                    <Text style={{ alignSelf: 'center' }}>Temporary Logout</Text>
-                </TouchableOpacity>
+            <Header style={{ height: 200, backgroundColor: colors.white, }}>
+                <Body style={{ flexDirection: 'row', paddingLeft: 20, }}>
+                    <Thumbnail source={{ uri: store.getState().user.current.avatar }} />
+                    <Text style={{ fontFamily: fonts.medium, paddingLeft: 20, fontSize: 16, marginTop: 15, }}>{`${store.getState().user.current.firstName} ${store.getState().user.current.surname}`}</Text>
+                </Body>
+            </Header>
+            <View style={{ justifyContent: 'flex-end', borderBottomWidth: 2.5, borderBottomColor: colors.default, opacity: 0.3, }}></View>
+            <Content style={{ marginTop: -3 }}>
+                <DrawerNavigatorItems labelStyle={{ color: "#707070", paddingLeft: 10, fontFamily: fonts.medium, }} {...props} />
+                <View>
+                    <TouchableOpacity
+                        onPress={() => logOut()}
+                        style={{ flexDirection: 'row', justifyContent: 'space-evenly', }}
+                        activeOpacity={0.7}
+                    >
+                        <Icon name='ios-power' />
+                        <Text style={{ alignSelf: 'center' }}>Temporary Logout</Text>
+                    </TouchableOpacity>
+                </View>
+            </Content>
+            <View style={{ padding: 30, alignItems: 'center', justifyContent: 'center' }}>
+                <Image source={require('../imgs/Bikelane.png')} />
             </View>
-        </Content>
-        <View style={{ padding: 30, alignItems: 'center', justifyContent: 'center' }}>
-            <Image source={require('../imgs/Bikelane.png')} />
-        </View>
-    </Container>
+        </Container>
     )
 }
 
@@ -103,21 +107,21 @@ const MyDrawerNavigator = createDrawerNavigator({
     'Payment': {
         screen: RiderMapScreen,
     },
-    'Calculate Fare': {
-        screen: RiderMapScreen,
-    },
-    'Promotions': {
-        screen: PromotionScreen,
-    },
+    // 'Calculate Fare': {
+    //     screen: RiderMapScreen,
+    // },
+    // 'Promotions': {
+    //     screen: PromotionScreen,
+    // },
     // 'Settings': {
     //     screen: RiderMapScreen,
     // },
     'Settings': {
         screen: SettingsScreen,
     },
-    'About': {
-        screen: RiderMapScreen,
-    },
+    // 'About': {
+    //     screen: RiderMapScreen,
+    // },
 }, {
     initialRouteName: "Home",
     contentComponent: drawerContentComponents,
@@ -164,9 +168,13 @@ const AppNavigator = createStackNavigator({
     LocateDriver: LocateDriver,
     AdminDriverDetail: AdminDriverDetailScreen,
     DriverMap: DriverDrawerNavigator,
+    SearchResult: SearchResultScreen,
+    MyCards: CardScreen,
+    AddCard: AddCardScreen,
+    AddReview: AddReviewScreen,
 },
     {
-        initialRouteName: "Init",
+        initialRouteName: "Splash",
         headerMode: "none"
     }
 );

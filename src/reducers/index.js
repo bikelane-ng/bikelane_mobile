@@ -8,6 +8,7 @@ import app from './app';
 import driver from './driver';
 import home from './home';
 import admin from './admin';
+import socket from './socket';
 
 const rootReducer = combineReducers({
     app,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
     driver,
     home,
     admin,
+    socket,
 });
 
 export default rootReducer;

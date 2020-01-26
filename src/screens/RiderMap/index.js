@@ -7,7 +7,8 @@ import {
     TouchableOpacity,
     PermissionsAndroid,
     Dimensions,
-    StatusBar
+    StatusBar,
+    StyleSheet,
 } from "react-native";
 import MapView, {
     Marker,
@@ -18,7 +19,7 @@ import MapView, {
 import Geolocation from '@react-native-community/geolocation';
 import haversine from "haversine";
 import {
-    Icon
+    Icon, Card, Spinner
 } from "native-base";
 import MapContainer from "../MapContainer";
 import MapSearch from "../MapSearch";
@@ -27,11 +28,13 @@ import BookingDetails from '../BookingDetails';
 import DriverDetails from "../DriverDetails";
 import { Menu } from "../assets/Components";
 import RequestRide from "../RequestRide";
-import { colors } from "../../constants/DefaultProps";
-// import io from 'socket.io-client';
-// const socket = io('http://localhost:8085', {
-//     transports: ['websocket']
-// });
+import RideArrived from '../RideArrived';
+import RideStarted from '../RideStarted';
+import PaymentMethod from '../PaymentMethods';
+import { colors, rideStatus } from "../../constants/DefaultProps";
+import NavigationService from "../../navigation/NavigationService";
+import TransactionCompleted from "../TransactionCompleted";
+var width = Dimensions.get("window").width; //full width
 
 const homePlace = { description: 'Home', geometry: { location: { lat: 48.8152937, lng: 2.4597668 } } };
 const workPlace = { description: 'Work', geometry: { location: { lat: 48.8496818, lng: 2.2940881 } } };
@@ -42,7 +45,7 @@ const LATITUDE_DELTA = 0.009;
 const LONGITUDE_DELTA = 0.009;
 const LATITUDE = 37.78825;
 const LONGITUDE = -122.4324;
-const DEFAULT_PADDING = { top: 80, right: 80, bottom: 80, left: 80 };
+const DEFAULT_PADDING = { top: 50, right: 50, bottom: 50, left: 50 };
 const SPACE = 0.01;
 
 class RiderMap extends React.Component {
@@ -55,9 +58,10 @@ class RiderMap extends React.Component {
             mapRef: {},
             selected: false,
             hasAddress: false,
+            estimate: false,
             region: {
-                latitude: 0,
-                longitude: 0,
+                latitude: this.props.home.location.coords.latitude,
+                longitude: this.props.home.location.coords.longitude,
                 latitudeDelta: LATITUDE_DELTA,
                 longitudeDelta: LONGITUDE_DELTA
             },
@@ -71,24 +75,41 @@ class RiderMap extends React.Component {
                 longitude: this.props.home.location.coords.longitude || 0,
                 latitudeDelta: 0,
                 longitudeDelta: 0
-            })
+            }),
+            rideArrived: false,
+            rideStarted: false,
+            paymentMethod: undefined,
         };
         this.mapRef = this.mapRef.bind(this);
         this.requestRide = this.requestRide.bind(this);
         this.fitMarkers = this.fitMarkers.bind(this);
         this.toggleDrawer = this.toggleDrawer.bind(this);
         this.onRegionChange = this.onRegionChange.bind(this);
+        this.props.socket.on('DriverLocation.push', (data) => {
+            console.log(data);
+        })
+        this.props.socket.on('RideStatus.push', (data) => {
+            this.props.rideStatus(data.status);
+            if (data.status === rideStatus.ARRIVED) {
+                //do something
+                alert('Driver just arrived location');
+            } else if (data.status === rideStatus.ONGOING) {
+                //do something
+                alert('Driver just started trip');
+                // this.setState({ rideStarted: true, rideArrived: false, });
+            } else if (data.status === rideStatus.COMPLETED) {
+                //do something
+                alert('Driver just arrived destination. Please make payment');
+            } else if (data.status === rideStatus.CANCELLED) {
+                //do something
+                alert('Driver just cancelled trip');
+            }
+        })
     }
-
-    // static navigationOptions = {
-    //     drawerIcon: ({ tintColor }) => (
-    //         <Icon type="Ionicons" style={{ color: tintColor }} name="ios-home" />
-    //     )
-    // }
 
     componentDidMount() {
         const { navigation } = this.props;
-        this.props.getCurrentLocation();
+        // this.props.getCurrentLocation();
         // this.props.getCurrentAddress();
         // socket.emit('serverData', { name: 'Obinna Okoro', role: 'Sofware Dev' })
         // const { coordinate } = this.state;
@@ -136,34 +157,25 @@ class RiderMap extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(prevProps) {
-        if (prevProps.home.location && prevProps.home.location != this.props.home.location) {
-            this.props.get
-            this.setState({
-                region: {
-                    latitude: prevProps.home.location.coords.latitude,
-                    longitude: prevProps.home.location.coords.longitude,
-                    latitudeDelta: LATITUDE_DELTA,
-                    longitudeDelta: LONGITUDE_DELTA
-                }
-            })
-        }
-        if (prevProps.home.selectedAddress && prevProps.home.selectedAddress != this.props.home.selectedAddress) {
-            if (prevProps.home.selectedAddress.pickUp.location) {
-                // this.props.updateInputAddress();
-                this.setState({
-                    region: {
-                        latitude: prevProps.home.selectedAddress.pickUp.location.latitude,
-                        longitude: prevProps.home.selectedAddress.pickUp.location.longitude,
-                        latitudeDelta: LATITUDE_DELTA,
-                        longitudeDelta: LONGITUDE_DELTA
-                    }
-                })
-            }
-        }
         if (prevProps.home.nearbyDrivers && prevProps.home.nearbyDrivers != this.props.home.nearbyDrivers) {
             this.setState({
                 nearbyDrivers: prevProps.home.nearbyDrivers
             })
+        }
+        if (prevProps.home.rideDetails && prevProps.home.rideDetails != this.props.home.rideDetails) {
+            let rideDetails = Object.assign(prevProps.home.rideDetails, this.props.home.estimatedRideDetails, {
+                pickUp: this.props.home.selectedAddress.pickUp,
+                dropOff: this.props.home.selectedAddress.dropOff,
+            });
+            this.props.updateRideDetails(rideDetails);
+            this.props.socket.emit('RideBooked', rideDetails);
+        }
+        if (prevProps.home.toggle && prevProps.home.toggle != this.props.home.toggle) {
+            this.props.navigation.navigate('SearchResult')
+        }
+        if (prevProps.home.estimate && prevProps.home.estimate != this.props.home.estimate) {
+            // this.fitMarkers();
+            this.setState({ estimate: true, });
         }
     }
 
@@ -200,70 +212,6 @@ class RiderMap extends React.Component {
             console.warn(err);
         }
     };
-
-    onPressZoomOut(region) {
-        setTimeout(() => {
-            this.region = {
-                latitude: region.latitude,
-                longitude: region.longitude,
-                latitudeDelta: LATITUDE_DELTA * 10,
-                longitudeDelta: LONGITUDE_DELTA * 10
-            }
-
-            this.setState({
-                region: {
-                    latitudeDelta: this.region.latitudeDelta,
-                    longitudeDelta: this.region.longitudeDelta,
-                    latitude: this.region.latitude,
-                    longitude: this.region.longitude
-                }
-            })
-            this.map.animateCamera(
-                {
-                    center: this.region
-                }
-            );
-            // this.map.animateCamera(this.region, 100);
-        }, 1000);
-        // setTimeout(async () => {
-        //     // this.map.animateToRegion(this.region, 1000);
-        //     const camera = await this.map.getCamera();
-        //     camera.heading += 10;
-        //     camera.pitch = 2;
-        //     // camera.altitude = 40;
-        //     camera.zoom += 2;
-        //     // camera.center.latitude += 0.5;
-        //     this.map.animateCamera(camera, { duration: 2000 });
-        //     // this.map.animateCamera(
-        //     //     {
-        //     //         center: {
-        //     //             latitude: region.latitude,
-        //     //             longitude: region.longitude,
-        //     //         }
-        //     //     }
-        //     // );
-        // }, 0);
-    }
-
-    onPressZoomIn(region) {
-        this.region = {
-            latitude: region.latitude,
-            longitude: region.longitude,
-            latitudeDelta: LATITUDE_DELTA / 10,
-            longitudeDelta: LONGITUDE_DELTA / 10
-        }
-        this.setState({
-            region: {
-                latitudeDelta: this.region.latitudeDelta,
-                longitudeDelta: this.region.longitudeDelta,
-                latitude: this.region.latitude,
-                longitude: this.region.longitude
-            }
-        })
-        setTimeout(() => {
-            this.map.animateToRegion(this.region, 100);
-        }, 1000);
-    }
 
     async animateCamera() {
 
@@ -307,23 +255,22 @@ class RiderMap extends React.Component {
         ];
     }
 
-    fitMarkers(pickUp, dropOff) {
-        setTimeout(() => {
-            var query = [
-                pickUp,
-                dropOff
-            ]
-            console.log(this.map)
-            console.log(this.getMarkers())
-            // this.map.fitToCoordinates(query, {
-            //     edgePadding: DEFAULT_PADDING,
-            //     animated: true,
-            // });
-            this.map.fitToCoordinates(this.getMarkers(), {
-                edgePadding: DEFAULT_PADDING,
-                animated: true,
-            });
-        }, 0);
+    fitMarkers = () => {
+        const { pickUp, dropOff } = this.props.home.selectedAddress;
+        const region = [
+            { latitude: pickUp.location.latitude, longitude: pickUp.location.longitude },
+            { latitude: dropOff.location.latitude, longitude: dropOff.location.longitude },
+        ];
+        console.log(this.map)
+        console.log(region)
+        // this.map.fitToCoordinates(query, {
+        //     edgePadding: DEFAULT_PADDING,
+        //     animated: true,
+        // });
+        this.map.fitToCoordinates(region, {
+            edgePadding: DEFAULT_PADDING,
+            animated: true,
+        });
     }
 
     onRegionChange = region => {
@@ -339,9 +286,7 @@ class RiderMap extends React.Component {
             pickup: pickUp.location,
             destination: dropOff.location,
         });
-        // setTimeout(() => {
-        //     this.fitMarkers(pickUp.location, dropOff.location);
-        // }, 0);
+        // this.fitMarkers(pickUp.location, dropOff.location);
     };
 
     requestRide = () => {
@@ -352,6 +297,16 @@ class RiderMap extends React.Component {
         });
     };
 
+    pay = () => {
+        if (!this.state.paymentMethod) {
+
+        }
+    }
+
+    selectMethod = (paymentMethod) => {
+        this.setState({ paymentMethod });
+    }
+
     toggleDrawer = () => this.props.navigation.toggleDrawer();
 
     render() {
@@ -359,7 +314,7 @@ class RiderMap extends React.Component {
         return (
             <View style={{ flex: 1, }}>
                 <StatusBar barStyle="light-content" backgroundColor={colors.default} />
-                {!this.props.home.toggle ? <View style={{ flex: 1, }}>
+                <View style={{ flex: 1, }}>
                     <MapContainer
                         role={'USER'}
                         region={this.state.region}
@@ -370,6 +325,7 @@ class RiderMap extends React.Component {
                         nearestDriver={this.state.nearestDriver}
                         onRegionChange={this.onRegionChange}
                         overlay={this.props.home.overlay}
+                        estimate={this.state.estimate}
                     />
                     <View style={{ position: 'absolute', top: 20, zIndex: 1000, elevation: 5, padding: 20, left: 0, }}>
                         <TouchableOpacity
@@ -378,32 +334,68 @@ class RiderMap extends React.Component {
                             <Menu />
                         </TouchableOpacity>
                     </View>
-                    {this.props.home.inputData.pickUp &&
-                        this.props.home.inputData.dropOff ? null : <MapSearch
-                            toggleSearchModal={this.props.toggleSearchModal}
-                            getAddressPredictions={this.props.getAddressPredictions}
-                            getInputData={this.props.getInputData}
-                            inputData={this.props.home.inputData}
-                            addressLoading={this.props.home.addressLoading}
-                        />}
-                    {this.props.home.requestRide && <RequestRide
-                        // response={this.props.home.requestedRide}
-                        requestedRide={this.props.home.requestedRide}
+                    {this.props.home.confirmedLocations ? null : <MapSearch
+                        toggleSearchModal={() => this.props.navigation.navigate('SearchResult')}
+                        // toggleSearchModal={this.props.toggleSearchModal}
+                        getAddressPredictions={this.props.getAddressPredictions}
+                        getInputData={this.props.getInputData}
+                        inputData={this.props.home.inputData}
+                        addressLoading={this.props.home.addressLoading}
+                    />}
+
+                    {this.props.home.requestRide && !this.props.home.rideDetails && <RequestRide
+                        // response={this.props.home.rideDetails}
+                        rideDetails={this.props.home.rideDetails}
+                        error={this.props.home.reqRideErr}
                         cancelRide={this.props.cancelRide}
                         searchAgain={this.requestRide}
                     />}
-                    {this.props.home.estimate && <BookingDetails
-                            estimatedRideDetails={this.props.home.estimatedRideDetails && this.props.home.estimatedRideDetails.data}
-                            // distanceMatrix={this.props.home.distanceMatrix}
-                            processing={this.props.home.processing}
-                            requestRide={this.requestRide}
-                            error={this.props.home.error}
-                        />}
-                    {this.props.home.nearestDriver && <DriverDetails
-                        driverDetails={this.props.home.nearestDriver}
-                        cancelRide={this.props.cancelRide}
+
+                    {this.props.home.tranx && <TransactionCompleted
+                        tranx={this.props.home.tranx}
+                        // status={this.props.home.payment.status}
+                        // creditAccount={() => this.props.navigation.navigate('MyCards')}
+                        proceed={() => this.props.navigation.navigate('AddReview')}
                     />}
-                </View> : <SearchResult
+
+                    {this.props.home.showCard && <View style={styles.searchBox}>
+                        <View style={{ marginTop: 20, padding: 15 }}>
+                            <Card style={[{ paddingBottom: 10, paddingTop: 0, padding: 10, }, styles.cardShadow]}>
+                                {this.props.home.error && !this.props.home.estimatedRideDetails && <View style={{ alignItems: 'center', justifyContent: 'center', }}>
+                                    <Text style={{ color: colors.white, paddingHorizontal: 10, padding: 2, backgroundColor: colors.danger, borderRadius: 5, margin: 10, }}>{this.props.home.error}</Text>
+                                </View>}
+                                {this.props.home.processing ? <Spinner color={colors.default_text} /> : <>
+                                    {this.props.home.estimate && <BookingDetails
+                                        estimatedRideDetails={this.props.home.estimatedRideDetails}
+                                        // distanceMatrix={this.props.home.distanceMatrix}
+                                        processing={this.props.home.processing}
+                                        requestRide={this.requestRide}
+                                        error={this.props.home.error}
+                                        cancelRide={this.props.cancelRide}
+                                    />}
+                                    {this.props.home.rideDetails && !this.props.home.hideDriverDetails && <DriverDetails
+                                        rideDetails={this.props.home.rideDetails}
+                                        cancelRide={this.props.cancelRide}
+                                    />}
+                                    {this.props.home.status == rideStatus.ARRIVED && <RideArrived
+                                        rideDetails={this.props.home.rideDetails}
+                                    // rideArrived={this.state.rideArrived}
+                                    />}
+                                    {this.props.home.status == rideStatus.ONGOING && <RideStarted
+                                        rideDetails={this.props.home.rideDetails}
+                                    // rideArrived={this.state.rideArrived}
+                                    />}
+                                    {this.props.home.status == rideStatus.COMPLETED && <PaymentMethod
+                                        rideDetails={this.props.home.rideDetails}
+                                        pay={() => this.props.navigation.navigate('AddCard', { rideDetails: this.props.home.rideDetails })}
+                                        paymentMethod={this.state.paymentMethod}
+                                        selectMethod={this.selectMethod}
+                                    />}
+                                </>}
+                            </Card>
+                        </View>
+                    </View>}
+                    {/* <SearchResult
                         inputData={this.props.home.inputData}
                         resultTypes={this.props.home.resultTypes}
                         predictions={this.props.home.predictions}
@@ -416,14 +408,67 @@ class RiderMap extends React.Component {
                         confirmSelection={this.confirmSelection}
                         searching={this.props.home.searching}
                         error={this.props.home.error}
-                    />}
+                    /> */}
+                </View>
             </View>
         );
     }
 }
 
+const styles = StyleSheet.create({
+    searchBox: {
+        bottom: 50,
+        position: "absolute",
+        width: width
+    },
+    searchBar: {
+        flex: 1,
+        flexDirection: 'column',
+        position: 'absolute',
+        zIndex: 999,
+        left: 15,
+        height: 40,
+    },
+    searchInput: {
+        flex: 1,
+        backgroundColor: 'white',
+        borderWidth: 1,
+        padding: 20,
+        opacity: .9,
+    },
+    cardShadow: {
+        borderWidth: 1,
+        borderRadius: 12,
+        borderColor: '#ddd',
+        borderBottomWidth: 0,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.2,
+        // shadowRadius: 2,
+        elevation: 5,
+        marginLeft: 5,
+        marginRight: 5,
+        marginTop: 10,
+    },
+    inputShadow: {
+        borderWidth: 1,
+        borderRadius: 2,
+        borderColor: '#ddd',
+        borderBottomWidth: 0,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        elevation: 1.2,
+        marginLeft: 5,
+        marginRight: 5,
+        marginTop: 10,
+    },
+})
+
 const mapStateToProps = state => ({
-    home: state.home
+    home: state.home,
+    socket: state.socket,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators(actionCreators, dispatch);
