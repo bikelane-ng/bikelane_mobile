@@ -12,6 +12,7 @@ import Text from '../../config/AppText';
 import { fonts, colors } from '../../constants/DefaultProps';
 import Button from '../../components/Button';
 import { SafeAreaView } from 'react-navigation';
+import NavigationService from '../../navigation/NavigationService';
 
 class Login extends React.Component {
     state = {
@@ -26,13 +27,13 @@ class Login extends React.Component {
         }
         if (prevProps.loggedIn && this.props.loggedIn !== prevProps.loggedIn) {
             if (this.props.role === "ADMIN") {
-                this.props.navigation.navigate('Admin');
+                this.props.navigation.dispatch(NavigationService.resetAction('Admin'))
             }
             if (this.props.role === "DRIVER") {
-                this.props.navigation.navigate('DriverMap');
+                this.props.navigation.dispatch(NavigationService.resetAction('DriverMap'))
             }
             if (this.props.role === "USER") {
-                this.props.navigation.navigate('RiderMap');
+                this.props.navigation.dispatch(NavigationService.resetAction('RiderMap'))
             }
         }
     }

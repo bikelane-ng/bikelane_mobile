@@ -31,6 +31,8 @@ import ConfirmPayment from '../ConfirmPayment';
 import Button from '../../components/Button';
 import { Acceptance, RatingIcon, Cancellation } from "../Admin/assets";
 import Text from '../../config/AppText';
+import whoosh from '../../services/sound';
+import NavigationService from "../../navigation/NavigationService";
 
 var width = Dimensions.get("window").width; //full width
 
@@ -85,30 +87,20 @@ class DriverMap extends React.Component {
         this.props.socket.on('RideBooked.push', (rideDetails) => {
             // alert('Ride Alert!!!');
             this.setState({ rideDetails, }, () => {
-                var Sound = require('react-native-sound');
-
-                // Enable playback in silence mode
-                Sound.setCategory('Playback');
-
-                var whoosh = new Sound('ride_alert.mp3', Sound.MAIN_BUNDLE, (error) => {
-                    if (error) {
-                        console.log('failed to load the sound', error);
-                        return;
+                whoosh.play((success) => {
+                    if (success) {
+                        console.log('successfully finished playing');
+                    } else {
+                        console.log('playback failed due to audio decoding errors');
                     }
-                    // loaded successfully
-                    console.log('duration in seconds: ' + whoosh.getDuration() + 'number of channels: ' + whoosh.getNumberOfChannels());
-
-                    // Play the sound with an onEnd callback
-                    whoosh.play((success) => {
-                        if (success) {
-                            console.log('successfully finished playing');
-                        } else {
-                            console.log('playback failed due to audio decoding errors');
-                        }
-                    });
                 });
             });
             // console.log(data);
+        });
+
+        this.props.socket.on('Payment.push', (data) => {
+            console.log(data);
+            this.props.navigation.dispatch(NavigationService.resetAction('TripDetails'))
         });
     }
 
@@ -382,6 +374,9 @@ class DriverMap extends React.Component {
     }
 
     headtToLocation = (rideDetails) => {
+        whoosh.stop(() => {
+            console.log('sounds stopped playing');
+        })
         this.props.updateRideDetails(rideDetails);
     }
 

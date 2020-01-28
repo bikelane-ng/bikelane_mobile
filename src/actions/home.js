@@ -17,6 +17,7 @@ import { API_KEY } from "../constants/DefaultProps";
 import config from "../config";
 Geocoder.init(API_KEY); // use a valid API key
 import store from '../store/createStore';
+import { rideStatus as rideStats } from "../constants/DefaultProps";
 
 const {
     GET_CURRENT_LOCATION,
@@ -518,6 +519,7 @@ export const updateRideStatus = (location, rideId, status) => ({
                     store.getState().socket.emit('RideStatus', {
                         status: status,  //or ONGOING, COMPLETED, CANCELLED
                         location: location,
+                        transactionDetails: status == rideStats.COMPLETED ? response.data : undefined,
                     })
                     return {
                         response,
@@ -544,11 +546,14 @@ export const updateRideStatus = (location, rideId, status) => ({
     }
 });
 
-export function rideStatus(status) {
+export function rideStatus(data) {
     return (dispatch) => {
         dispatch({
             type: constants.UPDATE_RIDE_STATUS_SUCCESS,
-            payload: { status, },
+            payload: {
+                status: data.status,
+                transactionDetails: data.transactionDetails,
+            },
         })
     }
 }
@@ -592,3 +597,28 @@ export const completeTransaction = (data) => ({
         credentials: "same-origin"
     }
 });
+
+export function addReview() {
+    return (dispatch) => {
+        dispatch({
+            type: constants.ADD_REVIEW,
+            // payload: riderDetails,
+        })
+    }
+}
+
+export function cashPayment() {
+    return (dispatch) => {
+        dispatch({
+            type: constants.COMPLETE_TRANSACTION_SUCCESS,
+        })
+    }
+}
+
+export function refresh() {
+    return (dispatch) => {
+        dispatch({
+            type: constants.REFRESH_CONTROL,
+        })
+    }
+}

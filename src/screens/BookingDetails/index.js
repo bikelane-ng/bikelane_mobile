@@ -29,7 +29,7 @@ const BookingDetails = ({ estimatedRideDetails, processing, requestRide, error, 
     return (
         <>
             {estimatedRideDetails && <>
-                <View style={{ flexDirection: "row", justifyContent: 'space-between', }}>
+                <View style={{ flexDirection: "row", justifyContent: 'space-between', paddingTop: 15, }}>
                     <View style={{ padding: 10 }}>
                         <Text style={{ fontSize: 10, }}>Estimated Cost</Text>
                         <Text style={{ fontFamily: fonts.bold, }}>NGN{fare.min} - NGN{fare.max}</Text>

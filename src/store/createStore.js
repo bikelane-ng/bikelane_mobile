@@ -18,6 +18,24 @@ function rootReducer(state, action) {
         state = {};
         AsyncStorage.clear();
     }
+    if (action.type == constants.REFRESH_CONTROL || action.type == constants.ADD_REVIEW) {
+        state = {
+            // user: {
+            //     loggedIn: state.user.loggedIn,
+            //     // role: state.user.role,
+            //     current: state.user.current,
+            // },
+            ...state,
+            home: {
+                location: state.home.location,
+                // inputData: state.home.inputData,
+                currentAddress: true,
+                refreshed: state.home.refreshed,
+            },
+            // socket: state.socket,
+        };
+        // console.log(state);
+    }
     return appReducer(state, action)
 }
 

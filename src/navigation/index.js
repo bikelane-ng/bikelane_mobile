@@ -36,6 +36,7 @@ import SearchResultScreen from '../screens/SearchResults';
 import CardScreen from '../screens/MyCards';
 import AddCardScreen from '../screens/AddCard';
 import AddReviewScreen from '../screens/AddReview';
+import TripDetailsScreen from '../screens/TripDetails';
 
 /**Driver screens starts here */
 import DriverMapScreen from '../screens/DriverMap';
@@ -172,6 +173,7 @@ const AppNavigator = createStackNavigator({
     MyCards: CardScreen,
     AddCard: AddCardScreen,
     AddReview: AddReviewScreen,
+    TripDetails: TripDetailsScreen,
 },
     {
         initialRouteName: "Splash",

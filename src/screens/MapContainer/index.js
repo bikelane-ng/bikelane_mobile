@@ -36,8 +36,8 @@ class MapContainer extends React.Component {
             { longitude: parseFloat(pickUp.location.longitude), latitude: parseFloat(pickUp.location.latitude), },
             { longitude: parseFloat(dropOff.location.longitude), latitude: parseFloat(dropOff.location.latitude), },
         ];
-        console.log(this.map)
-        console.log(region)
+        // console.log(this.map)
+        // console.log(region)
         // this.map.fitToCoordinates(query, {
         //     edgePadding: DEFAULT_PADDING,
         //     animated: true,
@@ -49,7 +49,7 @@ class MapContainer extends React.Component {
     }
     render() {
         const { pickUp, dropOff } = this.props.selectedAddress || this.props.rideDetails || {};
-        console.log(this.props.rideDetails);
+        // console.log(this.props.rideDetails);
         return (
             <View style={styles.mapContainer}>
                 {this.props.role === 'USER' && <View style={{ position: 'absolute', top: 80, left: 25, zIndex: 1000, }}>

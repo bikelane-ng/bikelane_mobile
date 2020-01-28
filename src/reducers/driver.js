@@ -94,6 +94,7 @@ export default function driverReducer(state = initialState, action) {
             return {
                 ...state,
                 status: undefined,
+                updateDriverError: undefined,
             }
 
         case constants.UPDATE_DRIVER_STATUS_SUCCESS:

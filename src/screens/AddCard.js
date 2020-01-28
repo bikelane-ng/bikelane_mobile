@@ -30,6 +30,10 @@ class AddCard extends Component {
     UNSAFE_componentWillReceiveProps(prevProps) {
         if (prevProps.home.tranx && prevProps.home.tranx != this.props.home.tranx) {
             NavigationService.goBack();
+            this.props.socket.emit('Payment', {
+                ride: this.props.home.rideDetails._id,
+                amount: 500,
+            })
         }
         if (prevProps.home.tranxErr && prevProps.home.tranxErr != this.props.home.tranxErr) {
             this.setState({ isProcessing: false, })
@@ -38,10 +42,15 @@ class AddCard extends Component {
     }
 
     async chargeCard() {
+        const { transactionDetails } = this.props.home || {};
         this.setState({ isProcessing: true })
         const { navigation } = this.props;
         let rideDetails = navigation.getParam('rideDetails', '');
-        if (this.expDate.split('/').length != 2) {
+        if (this.expDate == null) {
+            this.setState({ isProcessing: false })
+            return;
+        } else if (this.expDate.split('/').length != 2) {
+            this.setState({ isProcessing: false })
             return;
         }
         var e = {
@@ -49,10 +58,11 @@ class AddCard extends Component {
             expiryMonth: this.expDate.split('/')[0],
             expiryYear: this.expDate.split('/')[1],
             cvc: this.cvv,
-            email: 'obinna.okoroeugene@gmail.com',
-            amountInKobo: 500 * 100,
+            accessCode: transactionDetails.accessCode
+            // email: 'obinna.okoroeugene@gmail.com',
+            // amountInKobo: 500 * 100,
         }
-        await RNPaystack.chargeCard(e)
+        await RNPaystack.chargeCardWithAccessCode(e)
             .then(response => {
                 // this.setState({ isProcessing: false })
                 if (response && response.reference) {
@@ -77,7 +87,7 @@ class AddCard extends Component {
     render() {
         return (
             <Container style={{ backgroundColor: colors.bg, }}>
-                <Header />
+                {/* <Header /> */}
                 <Content>
                     <SubHeader
                         title={'Add Card'}

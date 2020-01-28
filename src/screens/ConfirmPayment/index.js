@@ -21,26 +21,31 @@ const haversine = require('haversine');
 const ConfirmPayment = ({ rideDetails, confirmPayment, }) => {
     return (
         <>
-            <View style={{ justifyContent: 'center', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#e6e6e6', padding: 20, }}>
-                <Text style={{ fontSize: 22, fontFamily: fonts.bold, }}>Fare: #500</Text>
+            <View style={{ justifyContent: 'center', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#e6e6e6', padding: 30, }}>
+                <View>
+                    <Text style={{ color: colors.gray, fontSize: 12, }}>Trip completed</Text>
+                </View>
+                <Text style={{ fontSize: 20, fontFamily: fonts.bold, }}>Fare: #500</Text>
             </View>
 
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, }}>
-                <View style={{ paddingHorizontal: 10 }}>
+            <View style={{ alignItems: 'center', padding: 10, }}>
+                {/* <View style={{ paddingHorizontal: 10 }}>
                     <Text style={{ fontSize: 12, }}>Wallet</Text>
                 </View>
 
                 <View style={{ paddingHorizontal: 10 }}>
                     <Text style={{ fontSize: 12, }}>Cash</Text>
-                </View>
+                </View> */}
+                <Text style={{ color: colors.gray, }}>Awaiting Payment from user</Text>
+                <Spinner color={colors.default_text} />
             </View>
-            <View style={{ paddingHorizontal: 20, paddingBottom: 20, marginTop: 10, }}>
+            {/* <View style={{ paddingHorizontal: 20, paddingBottom: 20, marginTop: 10, }}>
                 <Button
                     onPress={() => confirmPayment()}
                     BtnText={"Confirm"}
                     BtnTextStyles={{ color: '#ffffff' }}
                 />
-            </View>
+            </View> */}
         </>
     );
 }

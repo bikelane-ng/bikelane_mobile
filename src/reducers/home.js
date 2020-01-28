@@ -1,4 +1,5 @@
 import * as constants from '../constants/ActionTypes';
+import { rideStatus } from "../constants/DefaultProps";
 
 const initialState = {
     searching: false,
@@ -9,6 +10,7 @@ const initialState = {
     selectedAddress: {},
     toggle: null,
     mapRef: undefined,
+    // transactionObj: undefined,
 }
 export default function homeReducer(state = initialState, action) {
     switch (action.type) {
@@ -152,6 +154,7 @@ export default function homeReducer(state = initialState, action) {
             return Object.assign({}, state, {
                 requestRide: false,
                 rideDetails: undefined,
+                showCard: false,
                 confirmedLocations: undefined,
                 overlay: false,
                 toggle: true,
@@ -252,6 +255,7 @@ export default function homeReducer(state = initialState, action) {
                 isRideStatusUpdated: true,
                 hideDriverDetails: true,
                 status: action.payload.status,
+                transactionDetails: action.payload.transactionDetails,
             }
 
         case constants.UPDATE_RIDE_STATUS_FAILURE:
@@ -275,14 +279,39 @@ export default function homeReducer(state = initialState, action) {
                 ...state,
                 tranx: true,
                 tranxErr: undefined,
+                showCard: false,
             }
 
         case constants.COMPLETE_TRANSACTION_FAILURE:
             return {
                 ...state,
                 tranx: undefined,
-                tranxErr: `${action.payload.name} - ${action.payload.message}`,
+                tranxErr: `${action.payload.response && action.payload.response.error}`,
             }
+        case constants.ADD_REVIEW:
+            return {
+                ...state,
+                // showCard: true,
+                // hideDriverDetails: false,
+                // rideDetails: undefined,
+                // status: undefined,
+                // transactionDetails: undefined,
+                // tranx: undefined,
+                // confirmedLocations: true,
+                refreshed: true
+            }
+        case constants.REFRESH_CONTROL:
+            return {
+                ...state,
+                // showCard: true,
+                // hideDriverDetails: false,
+                // rideDetails: undefined,
+                // status: undefined,
+                // transactionDetails: undefined,
+                // tranx: undefined,
+                // confirmedLocations: true,
+                refreshed: true,
+            };
         default:
             return state;
     }

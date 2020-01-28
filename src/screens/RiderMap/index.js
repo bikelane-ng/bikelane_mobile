@@ -35,6 +35,7 @@ import { colors, rideStatus } from "../../constants/DefaultProps";
 import NavigationService from "../../navigation/NavigationService";
 import TransactionCompleted from "../TransactionCompleted";
 var width = Dimensions.get("window").width; //full width
+import { notify } from '../../services';
 
 const homePlace = { description: 'Home', geometry: { location: { lat: 48.8152937, lng: 2.4597668 } } };
 const workPlace = { description: 'Work', geometry: { location: { lat: 48.8496818, lng: 2.2940881 } } };
@@ -89,19 +90,23 @@ class RiderMap extends React.Component {
             console.log(data);
         })
         this.props.socket.on('RideStatus.push', (data) => {
-            this.props.rideStatus(data.status);
+            this.props.rideStatus(data);
             if (data.status === rideStatus.ARRIVED) {
                 //do something
-                alert('Driver just arrived location');
+                notify('Driver has arrived', 'Your driver just arrived your pick up location');
+                // alert('Driver just arrived location');
             } else if (data.status === rideStatus.ONGOING) {
                 //do something
-                alert('Driver just started trip');
+                // alert('Driver just started trip');
+                notify('Trip started', 'Your driver just started the trip');
                 // this.setState({ rideStarted: true, rideArrived: false, });
             } else if (data.status === rideStatus.COMPLETED) {
                 //do something
-                alert('Driver just arrived destination. Please make payment');
+                notify('Ride Completed', 'Driver just arrived destination. Please make payment');
+                // alert('Driver just arrived destination. Please make payment');
             } else if (data.status === rideStatus.CANCELLED) {
                 //do something
+                notify('Ride Cancelled', 'Your trip has been cancelled');
                 alert('Driver just cancelled trip');
             }
         })
@@ -298,9 +303,16 @@ class RiderMap extends React.Component {
     };
 
     pay = () => {
-        if (!this.state.paymentMethod) {
-
+        const { paymentMethod } = this.state;
+        if (paymentMethod && paymentMethod == 'cash') {
+            this.props.cashPayment();
+            this.props.socket.emit('Payment', {
+                ride: this.props.home.rideDetails._id,
+                amount: 500,
+            })
+            return;
         }
+        this.props.navigation.navigate('AddCard', { rideDetails: this.props.home.rideDetails, })
     }
 
     selectMethod = (paymentMethod) => {
@@ -355,7 +367,7 @@ class RiderMap extends React.Component {
                         tranx={this.props.home.tranx}
                         // status={this.props.home.payment.status}
                         // creditAccount={() => this.props.navigation.navigate('MyCards')}
-                        proceed={() => this.props.navigation.navigate('AddReview')}
+                        proceed={() => this.props.navigation.dispatch(NavigationService.resetAction('AddReview'))}
                     />}
 
                     {this.props.home.showCard && <View style={styles.searchBox}>
@@ -387,9 +399,10 @@ class RiderMap extends React.Component {
                                     />}
                                     {this.props.home.status == rideStatus.COMPLETED && <PaymentMethod
                                         rideDetails={this.props.home.rideDetails}
-                                        pay={() => this.props.navigation.navigate('AddCard', { rideDetails: this.props.home.rideDetails })}
+                                        pay={this.pay}
                                         paymentMethod={this.state.paymentMethod}
                                         selectMethod={this.selectMethod}
+                                        transactionObj={this.props.home.transactionObj}
                                     />}
                                 </>}
                             </Card>

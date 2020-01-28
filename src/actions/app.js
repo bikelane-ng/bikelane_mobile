@@ -42,8 +42,7 @@ export const initializeApp = (token) => ({
                 type: constants.INITIALIZATION_FAILURE,
                 meta: (action, state, res) => {
                     return {
-                        status: res.status,
-                        message: res.message
+                        status: res,
                     };
                 }
             }

@@ -6,7 +6,7 @@ const config = {
         host: 'https://bikelane.herokuapp.com',
         timeout: 20000
     },
-    paystack: "pk_test_c7fae17b0fc0dc90a958362549dd64ea8fb43a53",
+    paystack: "pk_test_0ea0b432bc09a6a366bb905cba0a396670b62413",
 };
 
 const BASE_URL = config.api.host;
