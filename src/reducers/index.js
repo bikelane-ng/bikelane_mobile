@@ -1,6 +1,4 @@
-import {
-    combineReducers
-} from 'redux';
+import {combineReducers} from 'redux';
 import user from './user';
 import login from './login';
 import register from './register';
@@ -11,14 +9,14 @@ import admin from './admin';
 import socket from './socket';
 
 const rootReducer = combineReducers({
-    app,
-    user,
-    login,
-    register,
-    driver,
-    home,
-    admin,
-    socket,
+  app,
+  user,
+  login,
+  register,
+  driver,
+  home,
+  admin,
+  socket,
 });
 
 export default rootReducer;

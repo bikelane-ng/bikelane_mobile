@@ -1,57 +1,52 @@
 import PushNotification from 'react-native-push-notification';
 // import { PushNotificationIOS } from 'react-native';
-import PushNotificationIOS from "@react-native-community/push-notification-ios";
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
 
 const configure = () => {
-    PushNotification.configure({
+  PushNotification.configure({
+    onRegister: function(token) {
+      //process token
+    },
 
-        onRegister: function (token) {
-            //process token
-        },
+    onNotification: function(notification) {
+      // process the notification
+      // required on iOS only
+      console.log(notification);
+      notification.finish(PushNotificationIOS.FetchResult.NoData);
+    },
 
-        onNotification: function (notification) {
-            // process the notification
-            // required on iOS only
-            console.log(notification);
-            notification.finish(PushNotificationIOS.FetchResult.NoData);
-        },
+    permissions: {
+      alert: true,
+      badge: true,
+      sound: true,
+    },
 
-        permissions: {
-            alert: true,
-            badge: true,
-            sound: true
-        },
-
-        popInitialNotification: true,
-        requestPermissions: true,
-
-    });
+    popInitialNotification: true,
+    requestPermissions: true,
+  });
 };
 
 function truncate(text, length = 35) {
-    return text.length > length ? `${text.substring(0, length)}...` : text;
+  return text.length > length ? `${text.substring(0, length)}...` : text;
 }
 
 const localNotification = (title, message, length = 35, id = 0) => {
-    PushNotification.localNotification({
-        id: id,
-        autoCancel: false,
-        largeIcon: "ic_launcher",
-        smallIcon: "ic_notification",
-        bigText: message.length > length ? message : '',
-        subText: "2m",
-        color: "green",
-        vibrate: true,
-        vibration: 300,
-        title: title,
-        message: truncate(message),
-        playSound: true,
-        soundName: 'default',
-        // actions: '["Accept", "Reject"]',
-    });
+  PushNotification.localNotification({
+    id: id,
+    autoCancel: false,
+    largeIcon: 'ic_launcher',
+    smallIcon: 'ic_notification',
+    bigText: message.length > length ? message : '',
+    subText: '2m',
+    color: 'green',
+    vibrate: true,
+    vibration: 300,
+    title: title,
+    message: truncate(message),
+    playSound: true,
+    soundName: 'default',
+    // actions: '["Accept", "Reject"]',
+  });
 };
 
-export {
-    configure,
-    localNotification,
-};
+export {configure, localNotification};

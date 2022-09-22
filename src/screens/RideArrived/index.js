@@ -1,67 +1,98 @@
-import React from "react";
-import {
-    View,
-    Linking,
-    TouchableOpacity,
-} from "react-native";
-import {
-    Thumbnail, Icon, Card, CardItem
-} from "native-base";
-import styles from "./RideArrivedStyles";
+import React from 'react';
+import {View, Linking, TouchableOpacity} from 'react-native';
+import {Thumbnail, Icon, Card, CardItem} from 'native-base';
+import styles from './RideArrivedStyles';
 import Text from '../../config/AppText';
 import LinearGradient from 'react-native-linear-gradient';
-import { Rating, AirbnbRating } from 'react-native-ratings';
+import {Rating, AirbnbRating} from 'react-native-ratings';
 import Button from '../../components/Button';
-import { colors, fonts } from "../../constants/DefaultProps";
-import { Call } from "../assets/Components";
+import {colors, fonts} from '../../constants/DefaultProps';
+import {Call} from '../assets/Components';
 
-const RideArrived = ({ rideDetails, }) => {
-    const { driver } = rideDetails || {};
-    return (
-        <>
-            <View style={{ paddingBottom: 15, paddingTop: 15, width: '100%', paddingHorizontal: 10, alignItems: 'center', }}>
-                <Text style={{ fontFamily: fonts.bold, fontSize: 20, }}>Your Bike has arrived!</Text>
+const RideArrived = ({rideDetails}) => {
+  const {driver} = rideDetails || {};
+  return (
+    <>
+      <View
+        style={{
+          paddingBottom: 15,
+          paddingTop: 15,
+          width: '100%',
+          paddingHorizontal: 10,
+          alignItems: 'center',
+        }}>
+        <Text style={{fontFamily: fonts.bold, fontSize: 20}}>
+          Your Bike has arrived!
+        </Text>
+      </View>
+      <View style={{flex: 1, flexDirection: 'column', paddingHorizontal: 0}}>
+        <CardItem
+          onPress={() => toggleSearchModal('pickUp')}
+          style={{flexDirection: 'column', alignItems: 'flex-start'}}>
+          <View
+            style={{
+              width: '100%',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            <View style={{flexDirection: 'row'}}>
+              <TouchableOpacity activeOpacity={0.7}>
+                <Thumbnail
+                  style={{width: 40, height: 40}}
+                  source={
+                    driver.avatar
+                      ? {uri: driver.avatar}
+                      : require('../../imgs/avatar.png')
+                  }
+                />
+              </TouchableOpacity>
+              <View
+                style={{
+                  paddingLeft: 10,
+                  alignItems: 'flex-start',
+                  position: 'relative',
+                  bottom: 5,
+                }}>
+                <Text style={{fontFamily: 'NoirPro-Medium', fontSize: 18}}>{`${
+                  driver.firstName
+                } ${driver.surname}`}</Text>
+                <AirbnbRating
+                  count={5}
+                  starStyle={{tintColor: '#009C24', marginTop: 5}}
+                  reviews={['Terrible', 'Bad', 'Okay', 'Good', 'Excellent']}
+                  defaultRating={5}
+                  showRating={false}
+                  size={10}
+                  // starStyle={{ justifyContent: "flex-start" }}
+                />
+                <Text
+                  style={{
+                    fontSize: 12,
+                    fontFamily: 'NoirPro-Medium',
+                    marginTop: 5,
+                  }}>
+                  {driver.driverInfo.vehicleInfo.licensePlate}
+                </Text>
+              </View>
             </View>
-            <View style={{ flex: 1, flexDirection: "column", paddingHorizontal: 0, }}>
-                <CardItem
-                    onPress={() => toggleSearchModal("pickUp")}
-                    style={{ flexDirection: "column", alignItems: "flex-start" }}>
-                    <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between" }}>
-                        <View style={{ flexDirection: "row" }}>
-                            <TouchableOpacity
-                                activeOpacity={0.7}
-                            >
-                                <Thumbnail
-                                    style={{ width: 40, height: 40 }}
-                                    source={driver.avatar ? { uri: driver.avatar } : require('../../imgs/avatar.png')} />
-                            </TouchableOpacity>
-                            <View style={{ paddingLeft: 10, alignItems: "flex-start", position: 'relative', bottom: 5, }}>
-                                <Text style={{ fontFamily: 'NoirPro-Medium', fontSize: 18 }}>{`${driver.firstName} ${driver.surname}`}</Text>
-                                <AirbnbRating
-                                    count={5}
-                                    starStyle={{ tintColor: '#009C24', marginTop: 5, }}
-                                    reviews={['Terrible', 'Bad', 'Okay', 'Good', 'Excellent']}
-                                    defaultRating={5}
-                                    showRating={false}
-                                    size={10}
-                                // starStyle={{ justifyContent: "flex-start" }}
-                                />
-                                <Text style={{ fontSize: 12, fontFamily: 'NoirPro-Medium', marginTop: 5, }}>{driver.driverInfo.vehicleInfo.licensePlate}</Text>
-                            </View>
-                        </View>
 
-                        <TouchableOpacity
-                            style={{ height: 50, width: 50, justifyContent: 'center', alignItems: 'center', borderRadius: 50 / 2, }}
-                            activeOpacity={0.7}
-                            onPress={() => Linking.openURL(`tel:${driver.mobile}`)}
-                        >
-                            <Call />
-                        </TouchableOpacity>
-                    </View>
-                </CardItem>
-            </View>
-        </>
-    );
-}
+            <TouchableOpacity
+              style={{
+                height: 50,
+                width: 50,
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 50 / 2,
+              }}
+              activeOpacity={0.7}
+              onPress={() => Linking.openURL(`tel:${driver.mobile}`)}>
+              <Call />
+            </TouchableOpacity>
+          </View>
+        </CardItem>
+      </View>
+    </>
+  );
+};
 
 export default RideArrived;

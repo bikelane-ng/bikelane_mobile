@@ -1,11 +1,34 @@
 import React from 'react';
 import Svg, {
-    Path, Circle, Defs, ClipPath, Rect, G, Line,
-} from "react-native-svg";
-import { Text } from 'react-native';
+  Path,
+  Circle,
+  Defs,
+  ClipPath,
+  Rect,
+  G,
+  Line,
+} from 'react-native-svg';
+import {Text} from 'react-native';
 
 export const Wallet = () => {
-    return <Svg xmlns="http://www.w3.org/2000/svg" width="9.9" height="8.787" viewBox="0 0 9.9 8.787">
-        <Path id="Path_94" data-name="Path 94" d="M10.9,13.337V10.795H2.795A.8.8,0,0,1,2,10v6.516a1.271,1.271,0,0,0,1.271,1.271H10.9V15.245" transform="translate(-1.5 -9.5)" fill="none" stroke="#111" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1" />
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="9.9"
+      height="8.787"
+      viewBox="0 0 9.9 8.787">
+      <Path
+        id="Path_94"
+        data-name="Path 94"
+        d="M10.9,13.337V10.795H2.795A.8.8,0,0,1,2,10v6.516a1.271,1.271,0,0,0,1.271,1.271H10.9V15.245"
+        transform="translate(-1.5 -9.5)"
+        fill="none"
+        stroke="#111"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-miterlimit="10"
+        stroke-width="1"
+      />
     </Svg>
-}
+  );
+};

@@ -1,21 +1,20 @@
 import React from 'react';
-import {
-    View,
-    Image,
-    TouchableOpacity,
-} from 'react-native';
+import {View, Image, TouchableOpacity} from 'react-native';
 import store from '../store/createStore';
-import { createAppContainer } from "react-navigation";
-import { createStackNavigator } from "react-navigation-stack";
-import { createDrawerNavigator, DrawerNavigatorItems } from "react-navigation-drawer";
+import {createAppContainer} from 'react-navigation';
+import {createStackNavigator} from 'react-navigation-stack';
+import {
+  createDrawerNavigator,
+  DrawerNavigatorItems,
+} from 'react-navigation-drawer';
 import * as constants from '../constants/ActionTypes';
 import Text from '../config/AppText';
 import SplashScreen from '../screens/Splash';
 import InitAppScreen from '../screens/InitializeApp';
 import RiderMapScreen from '../screens/RiderMap';
 import LocateDriver from '../screens/LocateDriver';
-import { Container, Header, Body, Thumbnail, Content, Icon, } from "native-base";
-import { colors, fonts } from '../constants/DefaultProps';
+import {Container, Header, Body, Thumbnail, Content, Icon} from 'native-base';
+import {colors, fonts} from '../constants/DefaultProps';
 import OTPScreen from '../screens/Auth/index';
 import VerifyOTPScreen from '../screens/Auth/VerifyOTP';
 import LoginScreen from '../screens/Auth/Login';
@@ -59,54 +58,77 @@ import NavigationService from './NavigationService';
 // }
 
 function logOut() {
-    setTimeout(() => {
-        AsyncStorage.clear();
-        NavigationService.navigate('Login');
-    }, 0);
+  setTimeout(() => {
+    AsyncStorage.clear();
+    NavigationService.navigate('Login');
+  }, 0);
 }
 
-const drawerContentComponents = (props) => {
-    return (
-        <Container>
-            <Header style={{ height: 200, backgroundColor: colors.white, }}>
-                <Body style={{ flexDirection: 'row', paddingLeft: 20, }}>
-                    <Thumbnail source={{ uri: store.getState().user.current.avatar }} />
-                    <Text style={{ fontFamily: fonts.medium, paddingLeft: 20, fontSize: 16, marginTop: 15, }}>{`${store.getState().user.current.firstName} ${store.getState().user.current.surname}`}</Text>
-                </Body>
-            </Header>
-            <View style={{ justifyContent: 'flex-end', borderBottomWidth: 2.5, borderBottomColor: colors.default, opacity: 0.3, }}></View>
-            <Content style={{ marginTop: -3 }}>
-                <DrawerNavigatorItems labelStyle={{ color: "#707070", paddingLeft: 10, fontFamily: fonts.medium, }} {...props} />
-                <View>
-                    <TouchableOpacity
-                        onPress={() => logOut()}
-                        style={{ flexDirection: 'row', justifyContent: 'space-evenly', }}
-                        activeOpacity={0.7}
-                    >
-                        <Icon name='ios-power' />
-                        <Text style={{ alignSelf: 'center' }}>Temporary Logout</Text>
-                    </TouchableOpacity>
-                </View>
-            </Content>
-            <View style={{ padding: 30, alignItems: 'center', justifyContent: 'center' }}>
-                <Image source={require('../imgs/Bikelane.png')} />
-            </View>
-        </Container>
-    )
-}
+const drawerContentComponents = props => {
+  return (
+    <Container>
+      <Header style={{height: 200, backgroundColor: colors.white}}>
+        <Body style={{flexDirection: 'row', paddingLeft: 20}}>
+          <Thumbnail source={{uri: store.getState().user.current.avatar}} />
+          <Text
+            style={{
+              fontFamily: fonts.medium,
+              paddingLeft: 20,
+              fontSize: 16,
+              marginTop: 15,
+            }}>{`${store.getState().user.current.firstName} ${
+            store.getState().user.current.surname
+          }`}</Text>
+        </Body>
+      </Header>
+      <View
+        style={{
+          justifyContent: 'flex-end',
+          borderBottomWidth: 2.5,
+          borderBottomColor: colors.default,
+          opacity: 0.3,
+        }}
+      />
+      <Content style={{marginTop: -3}}>
+        <DrawerNavigatorItems
+          labelStyle={{
+            color: '#707070',
+            paddingLeft: 10,
+            fontFamily: fonts.medium,
+          }}
+          {...props}
+        />
+        <View>
+          <TouchableOpacity
+            onPress={() => logOut()}
+            style={{flexDirection: 'row', justifyContent: 'space-evenly'}}
+            activeOpacity={0.7}>
+            <Icon name="ios-power" />
+            <Text style={{alignSelf: 'center'}}>Temporary Logout</Text>
+          </TouchableOpacity>
+        </View>
+      </Content>
+      <View
+        style={{padding: 30, alignItems: 'center', justifyContent: 'center'}}>
+        <Image source={require('../imgs/Bikelane.png')} />
+      </View>
+    </Container>
+  );
+};
 
-const MyDrawerNavigator = createDrawerNavigator({
-    'Home': {
-        screen: RiderMapScreen,
+const MyDrawerNavigator = createDrawerNavigator(
+  {
+    Home: {
+      screen: RiderMapScreen,
     },
-    'Profile': {
-        screen: ProfileScreen,
+    Profile: {
+      screen: ProfileScreen,
     },
     'Your Trips': {
-        screen: TripScreen,
+      screen: TripScreen,
     },
-    'Payment': {
-        screen: RiderMapScreen,
+    Payment: {
+      screen: RiderMapScreen,
     },
     // 'Calculate Fare': {
     //     screen: RiderMapScreen,
@@ -117,39 +139,48 @@ const MyDrawerNavigator = createDrawerNavigator({
     // 'Settings': {
     //     screen: RiderMapScreen,
     // },
-    'Settings': {
-        screen: SettingsScreen,
+    Settings: {
+      screen: SettingsScreen,
     },
     // 'About': {
     //     screen: RiderMapScreen,
     // },
-}, {
-    initialRouteName: "Home",
+  },
+  {
+    initialRouteName: 'Home',
     contentComponent: drawerContentComponents,
-});
+  },
+);
 
-const DriverDrawerNavigator = createDrawerNavigator({
-    'Home': {
-        screen: DriverMapScreen,
+const DriverDrawerNavigator = createDrawerNavigator(
+  {
+    Home: {
+      screen: DriverMapScreen,
     },
-    'Settings': {
-        screen: SettingsScreen,
+    Settings: {
+      screen: SettingsScreen,
     },
-}, {
-    initialRouteName: "Home",
+  },
+  {
+    initialRouteName: 'Home',
     contentComponent: drawerContentComponents,
-});
+  },
+);
 
-const AdminDrawerNavigator = createDrawerNavigator({
-    'Drivers': {
-        screen: AllDriverScreen,
+const AdminDrawerNavigator = createDrawerNavigator(
+  {
+    Drivers: {
+      screen: AllDriverScreen,
     },
-}, {
-    initialRouteName: "Drivers",
+  },
+  {
+    initialRouteName: 'Drivers',
     contentComponent: drawerContentComponents,
-});
+  },
+);
 
-const AppNavigator = createStackNavigator({
+const AppNavigator = createStackNavigator(
+  {
     Splash: SplashScreen,
     Init: InitAppScreen,
     OTP: OTPScreen,
@@ -174,11 +205,11 @@ const AppNavigator = createStackNavigator({
     AddCard: AddCardScreen,
     AddReview: AddReviewScreen,
     TripDetails: TripDetailsScreen,
-},
-    {
-        initialRouteName: "Splash",
-        headerMode: "none"
-    }
+  },
+  {
+    initialRouteName: 'Splash',
+    headerMode: 'none',
+  },
 );
 
 export default createAppContainer(AppNavigator);
